@@ -85,6 +85,7 @@ namespace engine{
 
             bool hasFiniteMass() const;
 
+            // If the two particles have the saem time derivatives, damping factor, and mass, we assume them to be the same particle
             bool operator==(const Particle& p) const {
                 return (pos == p.pos) && (vel == p.vel) && (acc == p.acc) && (real_abs(damping - p.damping) < EPSILON) && (real_abs(inverseMass - p.inverseMass) < EPSILON);
             }

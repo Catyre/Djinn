@@ -7,9 +7,9 @@
 
 #include "engine/particle.h"
 #include "engine/pfgen.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/fmt/fmt.h"
+// #include "spdlog/spdlog.h"
+// #include "spdlog/sinks/basic_file_sink.h"
+// #include "spdlog/fmt/fmt.h"
 #include "raylib.h"
 #include "rlgl.h"
 
@@ -41,13 +41,13 @@ static void DrawText3D(Font font, const char *text, Vector3 position, float font
 
 int main() {
     // Set up logging
-    try {
-        auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log");
-        spdlog::set_default_logger(logger);
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log init failed: " << ex.what() << std::endl;
-        return 0;
-    }
+    // try {
+    //     auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log");
+    //     spdlog::set_default_logger(logger);
+    // } catch (const spdlog::spdlog_ex& ex) {
+    //     std::cout << "Log init failed: " << ex.what() << std::endl;
+    //     return 0;
+    // }
 
     // Raylib Initialization
     //--------------------------------------------------------------------------------------
@@ -95,20 +95,21 @@ int main() {
 
     // Alternatively:
     //gravityRegistry.add(vector<Particle*>{moon, earth});
+    
     int frame = 0;
     while(!WindowShouldClose()) {
         // Increment frame
         frame += 1;
         // Output to log
-        spdlog::info("Frame: {}", frame);
-        spdlog::info("Moon position: ({}, {}, {})", moon->getPosition().x, moon->getPosition().y, moon->getPosition().z);
-        spdlog::info("Moon velocity: ({}, {}, {})", moon->getVelocity().x, moon->getVelocity().y, moon->getVelocity().z);
-        spdlog::info("Moon acceleration: ({}, {}, {})", moon->getAcceleration().x, moon->getAcceleration().y, moon->getAcceleration().z);
-        spdlog::info("----------------------------------------");
-        spdlog::info("Earth position: ({}, {}, {})", earth->getPosition().x, earth->getPosition().y, earth->getPosition().z);
-        spdlog::info("Earth velocity: ({}, {}, {})", earth->getVelocity().x, earth->getVelocity().y, earth->getVelocity().z);
-        spdlog::info("Earth acceleration: ({}, {}, {})", earth->getAcceleration().x, earth->getAcceleration().y, earth->getAcceleration().z);
-        spdlog::info("========================================");
+        // spdlog::info("Frame: {}", frame);
+        // spdlog::info("Moon position: ({}, {}, {})", moon->getPosition().x, moon->getPosition().y, moon->getPosition().z);
+        // spdlog::info("Moon velocity: ({}, {}, {})", moon->getVelocity().x, moon->getVelocity().y, moon->getVelocity().z);
+        // spdlog::info("Moon acceleration: ({}, {}, {})", moon->getAcceleration().x, moon->getAcceleration().y, moon->getAcceleration().z);
+        // spdlog::info("----------------------------------------");
+        // spdlog::info("Earth position: ({}, {}, {})", earth->getPosition().x, earth->getPosition().y, earth->getPosition().z);
+        // spdlog::info("Earth velocity: ({}, {}, {})", earth->getVelocity().x, earth->getVelocity().y, earth->getVelocity().z);
+        // spdlog::info("Earth acceleration: ({}, {}, {})", earth->getAcceleration().x, earth->getAcceleration().y, earth->getAcceleration().z);
+        // spdlog::info("========================================");
 
         gravityRegistry.applyGravity();
         gravityRegistry.integrateAll(dt);
@@ -116,11 +117,9 @@ int main() {
         Vec3 moon_x = moon->getPosition() * 1e-7;
         Vec3 earth_x = earth->getPosition() * 1e-7; // Scale down to hundreds of km
 
-        Vector3 *rl_moon_x = reinterpret_cast<Vector3*>(&moon_x); // Raylib vector for drawing
-        Vector3 *rl_earth_x = reinterpret_cast<Vector3*>(&earth_x); // Raylib vector for drawing
+        Vector3 rl_moon_x = moon_x.toVector3();
+        Vector3 rl_earth_x = earth_x.toVector3();
 
-        // rl_moon_x = (Vector3*){moon_x.x, moon_x.y, moon_x.z};
-        // rl_earth_x = (Vector3*){earth_x.x, earth_x.y, earth_x.z};
         UpdateCamera(&camera);
 
         BeginDrawing();
@@ -129,14 +128,11 @@ int main() {
             BeginMode3D(camera);
 
                 DrawGrid(100, 1.0f);        // Draw a grid
-                DrawSphere(*rl_moon_x, 1, WHITE); // Draw moon
-                DrawText3D(GetFontDefault(), "Moon", (Vector3){rl_moon_x->x, 6, rl_moon_x->z}, 10, 1, 1, true, WHITE); // Label Moon
-                //DrawSphere((Vector3){moon_x.x, moon_x.y, moon_x.z}, 1, WHITE);
-                //DrawText3D(GetFontDefault(), "Moon", (Vector3){moon_x.x, 6, moon_x.z}, 10, 1, 1, true, WHITE);
-                DrawSphere(*rl_earth_x, EARTHRADIUS/MOONRADIUS, BLUE); // Draw earth
-                DrawText3D(GetFontDefault(), "Earth", (Vector3){rl_earth_x->x, 6, rl_earth_x->z}, 10, 1, 1, true, WHITE);
-                // DrawSphere((Vector3){earth_x.x, earth_x.y, earth_x.z}, EARTHRADIUS/MOONRADIUS, BLUE);
-                // DrawText3D(GetFontDefault(), "Earth", (Vector3){earth_x.x, 6, earth_x.z}, 10, 1, 1, true, WHITE);
+                DrawSphere(rl_moon_x, 1, WHITE);
+                DrawText3D(GetFontDefault(), "Moon", Vec3(moon_x.x, 6, moon_x.z).toVector3(), 10, 1, 1, true, WHITE);
+
+                DrawSphere(rl_earth_x, EARTHRADIUS/MOONRADIUS, BLUE);
+                DrawText3D(GetFontDefault(), "Earth", Vec3(earth_x.x, 6, earth_x.z).toVector3(), 10, 1, 1, true, WHITE);
 
             EndMode3D();
 
@@ -144,9 +140,9 @@ int main() {
             DrawRectangleLines( 10, 10, 200, 75, BLUE);
 
             DrawText("Position:", 20, 20, 10, WHITE);
-            DrawText(TextFormat("X: %02.02f", rl_moon_x->x), 20, 35, 10, WHITE);
-            DrawText(TextFormat("Y: %02.02f", rl_moon_x->y), 20, 50, 10, WHITE);
-            DrawText(TextFormat("Z: %02.02f", rl_moon_x->z), 20, 65, 10, WHITE);
+            DrawText(TextFormat("X: %02.02f", rl_moon_x.x), 20, 35, 10, WHITE);
+            DrawText(TextFormat("Y: %02.02f", rl_moon_x.y), 20, 50, 10, WHITE);
+            DrawText(TextFormat("Z: %02.02f", rl_moon_x.z), 20, 65, 10, WHITE);
 
             DrawFPS(10, 10);
 

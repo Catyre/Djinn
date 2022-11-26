@@ -112,10 +112,6 @@ void ParticleForceRegistry::remove(Particle* particle, ParticleForceGenerator* f
     }
 }
 
-void ParticlePointGravity::applyGravBodies() {
-
-}
-
 void ParticleForceRegistry::clear() {
     registrations.clear();
 }
@@ -186,7 +182,7 @@ void ParticleUplift::updateForce(Particle* particle, real duration) {
     real z = particle->getPosition().z;
 
     if (real_pow((x - origin.x), 2) + real_pow((z - origin.z), 2) < real_pow(radius, 2)) {
-        force.y = 1.0f; // Apply constant force in y-direction
+        force.y = 1.0; // Apply constant force in y-direction
         particle->addForce(force);
     }
 } // void ParticleUplift::updateForce
@@ -281,15 +277,15 @@ void ParticleFakeSpring::updateForce(Particle *particle, real duration) {
     pos -= *anchor;
 
     // Calculate constants and check that they are in bounds
-    real gamma = 0.5f * real_sqrt(4 * springConstant - damping * damping);
-    if(gamma == 0.0f) return;
-    Vec3 c = pos * (damping / (2.0f * gamma)) + vel * (1.0f/gamma);
+    real gamma = 0.5 * real_sqrt(4 * springConstant - damping * damping);
+    if(gamma == 0.0) return;
+    Vec3 c = pos * (damping / (2.0 * gamma)) + vel * (1.0/gamma);
 
     // Calculate the target position
     Vec3 target = pos * real_cos(gamma * duration) + c * real_sin(gamma * duration);
-    target *= real_exp(-0.5f * damping * duration);
+    target *= real_exp(-0.5 * damping * duration);
 
     // Calculate the resulting acceleration (and therefore the force)
-    Vec3 acc = (target - pos) * (1.0f / (duration * duration)) - vel * duration;
+    Vec3 acc = (target - pos) * (1.0 / (duration * duration)) - vel * duration;
     particle->addForce(acc * particle->getMass());
 } // void ParticleFakeSpring

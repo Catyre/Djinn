@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -std=c++11 -O3 -I ./include -I /usr/local/Cellar/fmt/9.1.0/include/
+CFLAGS = -g -std=c++11 -O3 -I ./include -I /usr/local/Cellar/fmt/9.1.0/include/ -I /usr/local/Cellar/spdlog/1.10.0_1/include
 RLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 
 lunarorbit : src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp

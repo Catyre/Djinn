@@ -10,6 +10,7 @@
 #define EPSILON 1e-15
 
 #include "precision.h"
+#include "raylib.h"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -45,10 +46,6 @@ namespace engine {
                 ss << std::scientific << "<" << x << ", " << y << ", " << z << ">";
 
                 return ss.str();
-            }
-
-            static Vec3 vecAbs(const Vec3 &v1, const Vec3 &v2) {
-                return Vec3(real_abs(v1.x-v2.x), real_abs(v1.y-v2.y), real_abs(v1.z-v2.z));
             }
 
             // Get magnitude of vector
@@ -112,10 +109,6 @@ namespace engine {
             bool operator == (const Vec3& v) const {
                 return (*this - v).isZero();
             }
-
-            // bool operator == (const Vec3& v) const{
-            //     return ((*this - v).magnitude() < EPSILON);
-            // }
 
             bool operator != (const Vec3& v) {
                 return !(*this == v);
@@ -185,6 +178,10 @@ namespace engine {
 
             bool isZero() const {
                 return this->magnitude() < EPSILON;
+            }
+
+            Vector3 toVector3() {
+                return (Vector3){static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
             }
     }; // class Vec3
 }; // namespace engine

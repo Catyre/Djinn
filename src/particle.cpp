@@ -27,7 +27,7 @@ string Particle::toString() {
 
 void Particle::integrate(real duration) {
     // We won't integrate particles with infinite or negative mass
-    if (inverseMass <= 0.0f) return;
+    if (inverseMass <= 0.0) return;
 
     assert(duration > 0.0);
 
@@ -44,7 +44,7 @@ void Particle::integrate(real duration) {
 
     // Update linear position.
     pos.addScaledVector(vel, duration);
-    pos.addScaledVector(acc, duration * duration * 0.5);
+    //pos.addScaledVector(acc, duration * duration * 0.5);
 
     // Clear forces
     clearAccumulator();
@@ -136,7 +136,7 @@ void Particle::addForce(const Vec3& f) {
 }
 
 bool Particle::hasFiniteMass() const {
-    return inverseMass > 0.0f;
+    return inverseMass > 0.0;
 }
 
 Vec3 Particle::getForceAccum() const {

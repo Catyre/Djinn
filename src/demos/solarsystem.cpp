@@ -163,12 +163,12 @@ int main() {
 
         cout << "Line 162: " << earth->getPosition().toString() << endl;
         // Convert my Vec3 object to a Raylib Vector3 object
-        Vector3 *rl_earth_x = reinterpret_cast<Vector3*>(&earth_x); // Raylib vector for drawing
-        Vector3 *rl_moon_x = reinterpret_cast<Vector3*>(&moon_x);
-        Vector3 *rl_mars_x = reinterpret_cast<Vector3*>(&mars_x);
-        Vector3 *rl_venus_x = reinterpret_cast<Vector3*>(&venus_x);
-        Vector3 *rl_mercury_x = reinterpret_cast<Vector3*>(&mercury_x);
-        Vector3 *rl_sol_x = reinterpret_cast<Vector3*>(&sol_x);
+        Vector3 rl_earth_x = earth_x.toVector();
+        Vector3 rl_moon_x = moon_x.toVector3();
+        Vector3 rl_mars_x = mars_x.toVector3();
+        Vector3 rl_venus_x = venus_x.toVector3();
+        Vector3 rl_mercury_x = mercury_x.toVector3();
+        Vector3 rl_sol_x = sol_x.toVector3();
 
         UpdateCamera(&camera);
 
@@ -179,23 +179,23 @@ int main() {
 
                 DrawGrid(100, 1.0f);        // Draw a grid
                 DrawSphere(*rl_earth_x, 0.25, BLUE); // Draw earth
-                DrawText3D(GetFontDefault(), "Earth", (Vector3){rl_earth_x->x, 2, rl_earth_x->z}, 10, 1, 1, true, WHITE); // Label Earth
-                //DrawLine3D((Vector3){rl_earth_x->x-1, 0, rl_earth_x->z-1}, *rl_earth_x, BLUE);
+                DrawText3D(GetFontDefault(), "Earth", (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
+                //DrawLine3D((Vector3){rl_earth_x.x-1, 0, rl_earth_x.z-1}, *rl_earth_x, BLUE);
 
                 DrawSphere(*rl_moon_x, 0.1, GRAY); // Draw moon
-                DrawText3D(GetFontDefault(), "Moon", (Vector3){rl_moon_x->x, 2, rl_moon_x->z}, 10, 1, 1, true, WHITE); // Label Moon
+                DrawText3D(GetFontDefault(), "Moon", (Vector3){rl_moon_x.x, 2, rl_moon_x.z}, 10, 1, 1, true, WHITE); // Label Moon
 
                 DrawSphere(*rl_mars_x, 0.2, RED); // Draw mars
-                DrawText3D(GetFontDefault(), "Mars", (Vector3){rl_mars_x->x, 2, rl_mars_x->z}, 10, 1, 1, true, WHITE); // Label Mars
+                DrawText3D(GetFontDefault(), "Mars", (Vector3){rl_mars_x.x, 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
 
                 DrawSphere(*rl_venus_x, 0.2, YELLOW); // Draw venus
-                DrawText3D(GetFontDefault(), "Venus", (Vector3){rl_venus_x->x, 2, rl_venus_x->z}, 10, 1, 1, true, WHITE); // Label Venus
+                DrawText3D(GetFontDefault(), "Venus", (Vector3){rl_venus_x.x, 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
 
                 DrawSphere(*rl_mercury_x, 0.1, ORANGE); // Draw mercury
-                DrawText3D(GetFontDefault(), "Mercury", (Vector3){rl_mercury_x->x, 2, rl_mercury_x->z}, 10, 1, 1, true, WHITE); // Label Mercury
+                DrawText3D(GetFontDefault(), "Mercury", (Vector3){rl_mercury_x.x, 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
 
                 DrawSphere(*rl_sol_x, 1, YELLOW); // Draw Sol
-                DrawText3D(GetFontDefault(), "Sol", (Vector3){rl_sol_x->x, 2, rl_sol_x->z}, 10, 1, 1, true, WHITE); // Label Sol
+                DrawText3D(GetFontDefault(), "Sol", (Vector3){rl_sol_x.x, 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
 
             EndMode3D();
 
@@ -203,29 +203,29 @@ int main() {
             DrawRectangleLines(10, 30, 300, 75, BLUE);
 
             DrawText("Earth:", 20, 40, 10, WHITE);
-            DrawText(TextFormat("X: %02.02f", rl_earth_x->x), 20, 55, 10, WHITE);
-            DrawText(TextFormat("Y: %02.02f", rl_earth_x->y), 20, 70, 10, WHITE);
-            DrawText(TextFormat("Z: %02.02f", rl_earth_x->z), 20, 85, 10, WHITE);
+            DrawText(TextFormat("X: %02.02f", rl_earth_x.x), 20, 55, 10, WHITE);
+            DrawText(TextFormat("Y: %02.02f", rl_earth_x.y), 20, 70, 10, WHITE);
+            DrawText(TextFormat("Z: %02.02f", rl_earth_x.z), 20, 85, 10, WHITE);
 
             DrawText("Moon:", 80, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x->x), 80, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x->y), 80, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x->z), 80, 85, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.x), 80, 55, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.y), 80, 70, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.z), 80, 85, 10, WHITE);
 
             DrawText("Mars:", 140, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x->x), 140, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x->y), 140, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x->z), 140, 85, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mars_x.x), 140, 55, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mars_x.y), 140, 70, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mars_x.z), 140, 85, 10, WHITE);
 
             DrawText("Venus:", 200, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x->x), 200, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x->y), 200, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x->z), 200, 85, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_venus_x.x), 200, 55, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_venus_x.y), 200, 70, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_venus_x.z), 200, 85, 10, WHITE);
 
             DrawText("Mercury:", 260, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x->x), 260, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x->y), 260, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x->z), 260, 85, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mercury_x.x), 260, 55, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mercury_x.y), 260, 70, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_mercury_x.z), 260, 85, 10, WHITE);
 
             DrawFPS(10, 10);
 
