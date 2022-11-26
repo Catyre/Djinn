@@ -1,7 +1,7 @@
 /**
  * @file springmass.cpp
  * @brief Demonstration of the spring force generator in a gravitational field
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

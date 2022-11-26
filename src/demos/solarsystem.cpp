@@ -1,7 +1,7 @@
 /**
  * @file solarsystem.cpp
  * @brief Simulate the orbit of the Moon around Earth, and Earth around Sol
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

@@ -1,7 +1,7 @@
 /**
  * @file pfgen.cpp
  * @brief Source file to define behavior for particle force generators
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

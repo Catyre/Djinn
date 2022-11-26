@@ -1,12 +1,15 @@
 /**
  * @file lunarorbit.cpp
  * @brief Simulate the orbit of the Moon around Earth, and give output of the dynamics to stdout
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 
 #include "engine/particle.h"
 #include "engine/pfgen.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/fmt/fmt.h"
 #include "raylib.h"
 #include "rlgl.h"
 
@@ -37,6 +40,15 @@ static void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, floa
 static void DrawText3D(Font font, const char *text, Vector3 position, float fontSize, float fontSpacing, float lineSpacing, bool backface, Color tint);
 
 int main() {
+    // Set up logging
+    try {
+        auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log");
+        spdlog::set_default_logger(logger);
+    } catch (const spdlog::spdlog_ex& ex) {
+        std::cout << "Log init failed: " << ex.what() << std::endl;
+        return 0;
+    }
+
     // Raylib Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1440;
@@ -83,8 +95,21 @@ int main() {
 
     // Alternatively:
     //gravityRegistry.add(vector<Particle*>{moon, earth});
-
+    int frame = 0;
     while(!WindowShouldClose()) {
+        // Increment frame
+        frame += 1;
+        // Output to log
+        spdlog::info("Frame: {}", frame);
+        spdlog::info("Moon position: ({}, {}, {})", moon->getPosition().x, moon->getPosition().y, moon->getPosition().z);
+        spdlog::info("Moon velocity: ({}, {}, {})", moon->getVelocity().x, moon->getVelocity().y, moon->getVelocity().z);
+        spdlog::info("Moon acceleration: ({}, {}, {})", moon->getAcceleration().x, moon->getAcceleration().y, moon->getAcceleration().z);
+        spdlog::info("----------------------------------------");
+        spdlog::info("Earth position: ({}, {}, {})", earth->getPosition().x, earth->getPosition().y, earth->getPosition().z);
+        spdlog::info("Earth velocity: ({}, {}, {})", earth->getVelocity().x, earth->getVelocity().y, earth->getVelocity().z);
+        spdlog::info("Earth acceleration: ({}, {}, {})", earth->getAcceleration().x, earth->getAcceleration().y, earth->getAcceleration().z);
+        spdlog::info("========================================");
+
         gravityRegistry.applyGravity();
         gravityRegistry.integrateAll(dt);
 

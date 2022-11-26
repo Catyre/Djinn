@@ -1,7 +1,7 @@
 /**
  * @file particle.cpp
  * @brief Define methods for the Particle class
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

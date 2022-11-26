@@ -1,7 +1,7 @@
 /**
  * @file precision.h
  * @brief Defines the precision used in the engine
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

@@ -1,7 +1,7 @@
 /**
  * @file core.h
  * @brief Tools for vector math and other useful functions
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

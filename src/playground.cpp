@@ -1,7 +1,7 @@
 /**
  * @file playground.cpp
  * @brief Main entry for the engine, runs whatever I need it to run to test the engine
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-10-2022
 */
 

@@ -1,7 +1,7 @@
 /**
  * @file pfgen.h
  * @brief Header file for the particle force generators
- * @author Caleb Remocaldo
+ * @author Catyre
  * @date 11-12-2022
 */
 
