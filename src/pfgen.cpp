@@ -29,8 +29,6 @@
 using namespace engine;
 using namespace std;
 
-cout << "TEST" << endl;
-
 void ParticleUniversalForceRegistry::add(Particle* particle) {
     ParticleUniversalForceRegistration registration;
     registration.particle = particle;
