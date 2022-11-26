@@ -1,4 +1,4 @@
-** Welcome to the Djinn Engine!
+## Welcome to the Djinn Engine!
 Currently, this engine is in its very very early form.  In fact, at the moment, it can only support orbit of gravitational bodies, and even
 then it's rough going...
 
