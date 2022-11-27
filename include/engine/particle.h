@@ -10,7 +10,7 @@
 #include "core.h"
 #include <iostream>
 
-namespace engine{
+namespace djinn{
     class Particle {
         protected:
             // In some systems it is useful to name the particles
@@ -99,6 +99,6 @@ namespace engine{
                 return !(*this == p);
             }
     }; // class Particle
-}; // namespace engine
+}; // namespace djinn
 
 #endif // PARTICLE_H

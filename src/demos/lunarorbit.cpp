@@ -4,12 +4,10 @@
  * @author Catyre
 */
 
-#include "engine/particle.h"
-#include "engine/pfgen.h"
-//#include "engine/logger.h"
+#include "djinn/particle.h"
+#include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
-// #include "spdlog/fmt/fmt.h"
 #include "raylib.h"
 #include "rlgl.h"
 
@@ -30,7 +28,7 @@ bool SHOW_TEXT_BOUNDRY = false;
 #define EARTHMASS 5.97219e24 // [kg]
 #define EARTHRADIUS 6.371e6 // [m]
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 // Draw a codepoint in 3D space
@@ -101,6 +99,8 @@ int main() {
         // Increment frame
         frame += 1;
 
+        gravityRegistry.applyGravity();
+
         // Output to log
         spdlog::info("Frame: {}", frame);
         spdlog::info("Moon position:     {} | Earth position:     {}", moon->getPosition().toString(), earth->getPosition().toString());
@@ -108,11 +108,6 @@ int main() {
         spdlog::info("Moon acceleration: {} | Earth Acceleration: {}", moon->getAcceleration().toString(), earth->getAcceleration().toString());
         spdlog::info("Moon net force:    {} | Earth net force:    {}", moon->getNetForce().toString(), earth->getNetForce().toString());
         spdlog::info("---------------------------------------------------------------------------------------------------------------------------");
-
-        // cout << "Frame: " << frame << endl;
-        // cout << "Moon:" << endl << moon->toString() << "Earth:" << endl << earth->toString() << endl;
-
-        gravityRegistry.applyGravity();
         
         moon->integrate(dt);
         earth->integrate(dt);
@@ -158,6 +153,8 @@ int main() {
             DrawFPS(10, 10);
 
         EndDrawing();
+
+        spdlog::info("===========================================================================================================================");
     }
 
     CloseWindow();

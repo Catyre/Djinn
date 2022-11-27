@@ -11,7 +11,7 @@
 #include "particle.h"
 #include <vector>
 
-namespace engine {
+namespace djinn {
     class ParticleForceGenerator {
         public:
             virtual void updateForce(Particle *particle, real duration) = 0;
@@ -79,16 +79,16 @@ namespace engine {
 
     // A force generator that applies a gravitational force.  One instance can be used for
     //      multiple particles
-    class ParticleGravity : public ParticleForceGenerator {
+    class ParticleEarthGravity : public ParticleForceGenerator {
         Vec3 gravity;
 
         public:
             // Create generator with given acceleration
-            ParticleGravity(const Vec3& gravity);
+            ParticleEarthGravity(const Vec3& gravity);
 
             // Applies the gravitational force to the given particle
             virtual void updateForce(Particle* particle, real duration);
-    }; // class ParticleGravity
+    }; // class ParticleEarthGravity
 
     class ParticlePointGravity : public ParticleForceGenerator {
         Vec3 origin;
@@ -198,6 +198,6 @@ namespace engine {
 
             virtual void updateForce(Particle *particle, real duration);
     }; // class ParticleFakeSpring
-}; // namespace engine
+}; // namespace djinn
 
 #endif // PFGEN_H

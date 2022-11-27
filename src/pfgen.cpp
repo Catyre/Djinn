@@ -20,12 +20,12 @@
 
 #define G 6.67408e-11 // [m^3 kg^-1 s^-2]
 #include <iostream>
-#include "engine/pfgen.h"
+#include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include <algorithm>
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 void ParticleUniversalForceRegistry::add(Particle* particle) {
@@ -71,8 +71,6 @@ void ParticleUniversalForceRegistry::remove(Particle* particle) {
 
 void ParticleUniversalForceRegistry::applyGravity() {
     for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
-        int idx = find(begin(registrations), end(registrations), *i) - begin(registrations) + 1;
-
         for(Registry::iterator j = registrations.begin(); j != registrations.end(); j++) {
             if (i->particle != j->particle) {
                 Vec3 r = i->particle->getPosition() - j->particle->getPosition();
@@ -137,17 +135,24 @@ void ParticleForceRegistry::clear() {
     registrations.clear();
 }
 
-ParticleGravity::ParticleGravity(const Vec3& gravity)
+ParticleEarthGravity::ParticleEarthGravity(const Vec3& gravity)
 : gravity(gravity) 
 {
 }
 
-void ParticleGravity::updateForce(Particle* particle, real duration) {
+void ParticleEarthGravity::updateForce(Particle* particle, real duration) {
     // Check if particle has a finite mass
     if (!particle->hasFiniteMass()) return;
 
+    // Calculate force
+    Vec3 force =  gravity * particle->getMass();
+
+    //particle->addForce(particle->getMass() * gravity);
+
     // Apply force to the particle
-    particle->addForce(gravity * particle->getMass());
+    particle->addForce(force);
+    // Log force application
+    spdlog::info("Applied Earth gravity to particle \"{}\" ({})", particle->getName(), force.toString());
 }
 
 ParticlePointGravity::ParticlePointGravity(const Vec3& origin, const real mass)
@@ -176,6 +181,9 @@ void ParticlePointGravity::updateForce(Particle* particle, real duration) {
     
     // Apply the force
     particle->addForce(force);
+
+    // Log force application
+    spdlog::info("Applied fixed-point gravitational force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void ParticlePointGravity::updateForce
 
 void ParticleDrag::updateForce(Particle* particle, real duration) {
@@ -189,6 +197,9 @@ void ParticleDrag::updateForce(Particle* particle, real duration) {
     force.normalize();
     force *= -dragCoeff;
     particle->addForce(force);
+
+    // Log force application
+    spdlog::info("Applied drag force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void ParticleDrag::updateForce
 
 ParticleUplift::ParticleUplift(Vec3 origin, real radius)
@@ -205,6 +216,9 @@ void ParticleUplift::updateForce(Particle* particle, real duration) {
     if (real_pow((x - origin.x), 2) + real_pow((z - origin.z), 2) < real_pow(radius, 2)) {
         force.y = 1.0; // Apply constant force in y-direction
         particle->addForce(force);
+
+        // Log force application
+        spdlog::info("Applied uplift force to particle \"{}\" ({})", particle->getName(), force.toString());
     }
 } // void ParticleUplift::updateForce
 
@@ -227,6 +241,9 @@ void ParticleSpring::updateForce(Particle* particle, real duration) {
     force.normalize();
     force *= -magnitude;
     particle->addForce(force);
+    
+    // Log force application
+    spdlog::info("Applied spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void ParticleSpring::updateForce
 
 real ParticleSpring::calcCritDamping(real mass) {
@@ -255,6 +272,9 @@ void ParticleAnchoredSpring::updateForce(Particle* particle, real duration) {
     if(stretchedLength >= elasticLimit) force *= .25;
 
     particle->addForce(force);
+
+    // Log force application
+    spdlog::info("Applied anchored spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void ParticleAnchoredSpring::updateForce
 
 ParticleBungee::ParticleBungee(Particle *other, real springConstant, real restLength) 
@@ -279,6 +299,9 @@ void ParticleBungee::updateForce(Particle *particle, real duration) {
     force.normalize();
     force *= -magnitude;
     particle->addForce(force);
+
+    // Log force application
+    spdlog::info("Applied bungee spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // ParticleBungee::updateForce
 
 ParticleFakeSpring::ParticleFakeSpring(Vec3 *anchor, real springConstant, real damping)
@@ -308,5 +331,9 @@ void ParticleFakeSpring::updateForce(Particle *particle, real duration) {
 
     // Calculate the resulting acceleration (and therefore the force)
     Vec3 acc = (target - pos) * (1.0 / (duration * duration)) - vel * duration;
-    particle->addForce(acc * particle->getMass());
+    Vec3 force = acc * particle->getMass();
+    particle->addForce(force);
+
+    // Log force application
+    spdlog::info("Applied fake spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void ParticleFakeSpring

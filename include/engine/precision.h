@@ -1,6 +1,6 @@
 /**
  * @file precision.h
- * @brief Defines the precision used in the engine
+ * @brief Defines the precision used in the djinn
  * @author Catyre
  * @date 11-10-2022
 */
@@ -11,7 +11,7 @@
 #include <float.h>
 #include <cmath>
 
-namespace engine {
+namespace djinn {
 
     #if 0
         /**

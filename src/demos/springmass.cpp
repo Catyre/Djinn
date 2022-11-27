@@ -5,12 +5,12 @@
  * @date 11-10-2022
 */
 
-#include "engine/particle.h"
-#include "engine/pfgen.h"
+#include "djinn/particle.h"
+#include "djinn/pfgen.h"
 
 #define LINECOUNT 5
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 int main() {

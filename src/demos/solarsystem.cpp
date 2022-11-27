@@ -5,8 +5,8 @@
  * @date 11-10-2022
 */
 
-#include "engine/particle.h"
-#include "engine/pfgen.h"
+#include "djinn/particle.h"
+#include "djinn/pfgen.h"
 #include "raylib.h"
 #include "rlgl.h"
 
@@ -52,7 +52,7 @@ bool SHOW_TEXT_BOUNDRY = false;
 #define MARSVELOCITY 2.41e4 // [m/s] (Relative to Sun)
 #define MARSRADIUS 3.3895e6 // [m]
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 // Draw a codepoint in 3D space

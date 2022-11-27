@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -std=c++11 -O3 -lfmt -I ./include
+CFLAGS = -g -std=c++11 -lfmt -I ./include
 RLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 
 lunarorbit : src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp

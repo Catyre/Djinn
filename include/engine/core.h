@@ -14,7 +14,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace engine {
+namespace djinn {
     class Vec3 {
         public:
             // Spatial coordinates
@@ -183,6 +183,6 @@ namespace engine {
                 return (Vector3){static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
             }
     }; // class Vec3
-}; // namespace engine
+}; // namespace djinn
 
 #endif

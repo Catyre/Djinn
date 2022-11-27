@@ -7,14 +7,18 @@
 #include <assert.h>
 #include <sstream>
 #include <limits>
-#include "engine/particle.h"
+#include "djinn/particle.h"
 #include "spdlog/spdlog.h"
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 string Particle::toString() {
     stringstream ss;
+
+    if(!this->name.empty()) {
+        ss << this->name << ": " << endl;
+    } 
 
     ss << scientific << "Position [m]:         |<" << this->pos.x << ", " << this->pos.y << ", " << this->pos.z << ">| = " << this->pos.magnitude() << endl <<
                         "Velocity [m/s]:       |<" << this->vel.x << ", " << this->vel.y << ", " << this->vel.z << ">| = " << this->vel.magnitude() << endl <<
@@ -49,7 +53,7 @@ void Particle::integrate(real duration) {
     // Clear forces
     clearAccumulator();
 
-    spdlog::info("Particle {} integrated and forces cleared", this->name);
+    spdlog::info("Particle \"{}\" integrated and forces cleared", this->name);
 } // Particle::integrate()
 
 real Particle::kineticEnergy() {

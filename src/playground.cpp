@@ -1,12 +1,12 @@
 /**
  * @file playground.cpp
- * @brief Main entry for the engine, runs whatever I need it to run to test the engine
+ * @brief Main entry for the djinn, runs whatever I need it to run to test the djinn
  * @author Catyre
  * @date 11-10-2022
 */
 
-#include "engine/particle.h"
-#include "engine/pfgen.h"
+#include "djinn/particle.h"
+#include "djinn/pfgen.h"
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 
 #define LINECOUNT 5 // How many lines are printed out from toString()
 
-using namespace engine;
+using namespace djinn;
 using namespace std;
 
 int main() {
