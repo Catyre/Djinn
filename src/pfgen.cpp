@@ -48,7 +48,7 @@ void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
 }
 
 void ParticleUniversalForceRegistry::remove(Particle* particle) {
-    for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
+    for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         if (i->particle == particle) {
             registrations.erase(i);
             return;

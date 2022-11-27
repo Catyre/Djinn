@@ -7,8 +7,8 @@
 
 #include "engine/particle.h"
 #include "engine/pfgen.h"
-// #include "spdlog/spdlog.h"
-// #include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 // #include "spdlog/fmt/fmt.h"
 #include "raylib.h"
 #include "rlgl.h"
@@ -41,13 +41,13 @@ static void DrawText3D(Font font, const char *text, Vector3 position, float font
 
 int main() {
     // Set up logging
-    // try {
-    //     auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log");
-    //     spdlog::set_default_logger(logger);
-    // } catch (const spdlog::spdlog_ex& ex) {
-    //     std::cout << "Log init failed: " << ex.what() << std::endl;
-    //     return 0;
-    // }
+    try {
+        auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log", true);
+        spdlog::set_default_logger(logger);
+    } catch (const spdlog::spdlog_ex& ex) {
+        std::cout << "Log init failed: " << ex.what() << std::endl;
+        return 0;
+    }
 
     // Raylib Initialization
     //--------------------------------------------------------------------------------------
@@ -95,21 +95,17 @@ int main() {
 
     // Alternatively:
     //gravityRegistry.add(vector<Particle*>{moon, earth});
-    
+
     int frame = 0;
     while(!WindowShouldClose()) {
         // Increment frame
         frame += 1;
         // Output to log
-        // spdlog::info("Frame: {}", frame);
-        // spdlog::info("Moon position: ({}, {}, {})", moon->getPosition().x, moon->getPosition().y, moon->getPosition().z);
-        // spdlog::info("Moon velocity: ({}, {}, {})", moon->getVelocity().x, moon->getVelocity().y, moon->getVelocity().z);
-        // spdlog::info("Moon acceleration: ({}, {}, {})", moon->getAcceleration().x, moon->getAcceleration().y, moon->getAcceleration().z);
-        // spdlog::info("----------------------------------------");
-        // spdlog::info("Earth position: ({}, {}, {})", earth->getPosition().x, earth->getPosition().y, earth->getPosition().z);
-        // spdlog::info("Earth velocity: ({}, {}, {})", earth->getVelocity().x, earth->getVelocity().y, earth->getVelocity().z);
-        // spdlog::info("Earth acceleration: ({}, {}, {})", earth->getAcceleration().x, earth->getAcceleration().y, earth->getAcceleration().z);
-        // spdlog::info("========================================");
+        spdlog::info("Frame: {}", frame);
+        spdlog::info("Moon position:     {} | Earth position:     {}", moon->getPosition().toString(), earth->getPosition().toString());
+        spdlog::info("Moon velocity:     {} | Earth velocity:     {}", moon->getVelocity().toString(), earth->getVelocity().toString());
+        spdlog::info("Moon acceleration: {} | Earth Acceleration: {}", moon->getAcceleration().toString(), earth->getAcceleration().toString());
+        spdlog::info("---------------------------------------------------------------------------------------------------------------------------");
 
         gravityRegistry.applyGravity();
         gravityRegistry.integrateAll(dt);
@@ -136,13 +132,18 @@ int main() {
 
             EndMode3D();
 
-            DrawRectangle( 10, 10, 200, 75, Fade(SKYBLUE, 0.5f));
-            DrawRectangleLines( 10, 10, 200, 75, BLUE);
+            DrawRectangle(10, 30, 125, 75, Fade(SKYBLUE, 0.5f));
+            DrawRectangleLines(10, 30, 125, 75, BLUE);
 
-            DrawText("Position:", 20, 20, 10, WHITE);
-            DrawText(TextFormat("X: %02.02f", rl_moon_x.x), 20, 35, 10, WHITE);
-            DrawText(TextFormat("Y: %02.02f", rl_moon_x.y), 20, 50, 10, WHITE);
-            DrawText(TextFormat("Z: %02.02f", rl_moon_x.z), 20, 65, 10, WHITE);
+            DrawText("Earth:", 20, 40, 10, WHITE);
+            DrawText(TextFormat("X: %02.02f", rl_earth_x.x), 20, 55, 10, WHITE);
+            DrawText(TextFormat("Y: %02.02f", rl_earth_x.y), 20, 70, 10, WHITE);
+            DrawText(TextFormat("Z: %02.02f", rl_earth_x.z), 20, 85, 10, WHITE);
+
+            DrawText("Moon:", 80, 40, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.x), 80, 55, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.y), 80, 70, 10, WHITE);
+            DrawText(TextFormat("%02.02f", rl_moon_x.z), 80, 85, 10, WHITE);
 
             DrawFPS(10, 10);
 
