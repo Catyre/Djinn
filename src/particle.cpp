@@ -44,7 +44,7 @@ void Particle::integrate(real duration) {
 
     // Update linear position.
     pos.addScaledVector(vel, duration);
-    //pos.addScaledVector(acc, duration * duration * 0.5);
+    // pos.addScaledVector(acc, duration * duration * 0.5);
 
     // Clear forces
     clearAccumulator();
@@ -121,7 +121,11 @@ Vec3 Particle::getAcceleration() const {
 
 real Particle::getMass() const {
     if (inverseMass == 0) {
-        return std::numeric_limits<float>::max();
+        #ifdef DOUBLE_PRECISION
+            return std::numeric_limits<double>::max();
+        #else
+            return std::numeric_limits<float>::max();
+        #endif
     } else {
         return ((real)1.0)/inverseMass;
     }
