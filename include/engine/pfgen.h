@@ -2,7 +2,6 @@
  * @file pfgen.h
  * @brief Header file for the particle force generators
  * @author Catyre
- * @date 11-12-2022
 */
 
 #ifndef PFGEN_H
@@ -18,12 +17,13 @@ namespace engine {
             virtual void updateForce(Particle *particle, real duration) = 0;
     };
 
+    // To be used for forces that apply universally to all particles in the system (gravity or electromagnetism, for example)
     class ParticleUniversalForceRegistry {
         protected:
             struct ParticleUniversalForceRegistration {
                 Particle *particle;
 
-                bool operator==(const ParticleUniversalForceRegistration& other) const{
+                bool operator==(const ParticleUniversalForceRegistration& other) const {
                     return particle == other.particle;
                 }
             };

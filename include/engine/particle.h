@@ -2,7 +2,6 @@
  * @file particle.h
  * @brief Header file for the Particle class
  * @author Catyre
- * @date 11-10-2022
 */
 
 #ifndef PARTICLE_H
@@ -14,6 +13,9 @@
 namespace engine{
     class Particle {
         protected:
+            // In some systems it is useful to name the particles
+            std::string name;
+
             // Keep track of position and its time derivatives
             Vec3 pos;
             Vec3 vel;
@@ -32,16 +34,17 @@ namespace engine{
             */
             real inverseMass;
 
-            Vec3 forceAccum;
+            Vec3 netForce;
 
         public:
-            Particle() : pos(0, 0, 0), vel(0, 0, 0), acc(0, 0, 0), damping((real)1.0), inverseMass(0) {};
+            Particle() : pos(0, 0, 0), vel(0, 0, 0), acc(0, 0, 0), damping((real)1.0), inverseMass(0), name("") {};
 
             Particle(const Vec3 pos, 
                      const Vec3 vel, 
                      const Vec3 acc, 
                      const real damping, 
-                     const real inverseMass) : pos(pos), vel(vel), acc(acc), damping(damping), inverseMass(inverseMass) {};
+                     const real inverseMass,
+                     const std::string name = "") : pos(pos), vel(vel), acc(acc), damping(damping), inverseMass(inverseMass), name(name) {};
 
             std::string toString();
 
@@ -50,6 +53,8 @@ namespace engine{
             real kineticEnergy();
 
             // Getters and setters for various physical quantities
+
+            std::string getName() const;
             
             void setMass(const real mass);
 
@@ -81,7 +86,7 @@ namespace engine{
 
             void addForce(const Vec3& f);
 
-            Vec3 getForceAccum() const;
+            Vec3 getNetForce() const;
 
             bool hasFiniteMass() const;
 

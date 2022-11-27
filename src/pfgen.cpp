@@ -2,7 +2,6 @@
  * @file pfgen.cpp
  * @brief Source file to define behavior for particle force generators
  * @author Catyre
- * @date 11-10-2022
 */
 
 /* FORCES TO IMPLMENT
@@ -32,9 +31,12 @@ using namespace std;
 void ParticleUniversalForceRegistry::add(Particle* particle) {
     ParticleUniversalForceRegistration registration;
     registration.particle = particle;
-
+    
     // Don't add duplicates
     if (find(begin(registrations), end(registrations), registration) == end(registrations)) registrations.push_back(registration);
+    
+    // Log registration
+    spdlog::info("Added particle \"{}\" to universal force registry", particle->getName());
 }
 
 void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
@@ -43,7 +45,15 @@ void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
         registration.particle = *particle;
 
         // Don't add duplicates
-        if (find(begin(registrations), end(registrations), registration) == end(registrations)) registrations.push_back(registration);
+        if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
+            registrations.push_back(registration);
+
+            // Log registration
+            spdlog::info("Added particle \"{}\" to universal force registry", (*particle)->getName());
+        } else {
+            // Log discard
+            spdlog::info("Particle \"{}\" already in universal force registry...discarding", (*particle)->getName());
+        }
     }
 }
 
@@ -51,6 +61,9 @@ void ParticleUniversalForceRegistry::remove(Particle* particle) {
     for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         if (i->particle == particle) {
             registrations.erase(i);
+
+            // Log removal
+            spdlog::info("Removed particle \"{}\" from universal force registry", particle->getName());
             return;
         }
     }
@@ -58,13 +71,18 @@ void ParticleUniversalForceRegistry::remove(Particle* particle) {
 
 void ParticleUniversalForceRegistry::applyGravity() {
     for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
+        int idx = find(begin(registrations), end(registrations), *i) - begin(registrations) + 1;
+
         for(Registry::iterator j = registrations.begin(); j != registrations.end(); j++) {
             if (i->particle != j->particle) {
                 Vec3 r = i->particle->getPosition() - j->particle->getPosition();
-                real rMag = r.magnitude();
+                real rMagSquared = r.squareMagnitude();
                 r.normalize();
-                Vec3 force = r * (-G * i->particle->getMass() * j->particle->getMass()) / (rMag * rMag);
+                Vec3 force = r * (-G * i->particle->getMass() * j->particle->getMass()) / (rMagSquared);
                 i->particle->addForce(force);
+
+                // Log force application
+                spdlog::info("Applied gravitational force to particle \"{}\" ({})", i->particle->getName(), force.toString());
             }
         }
     }
@@ -73,6 +91,9 @@ void ParticleUniversalForceRegistry::applyGravity() {
 void ParticleUniversalForceRegistry::integrateAll(real duration) {
     for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         i->particle->integrate(duration);
+
+        // Log integration
+        spdlog::info("Integrated particle in universal force registry");
     }
 }
 

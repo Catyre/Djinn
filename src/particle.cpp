@@ -2,13 +2,13 @@
  * @file particle.cpp
  * @brief Define methods for the Particle class
  * @author Catyre
- * @date 11-10-2022
 */
 
 #include <assert.h>
 #include <sstream>
 #include <limits>
 #include "engine/particle.h"
+#include "spdlog/spdlog.h"
 
 using namespace engine;
 using namespace std;
@@ -19,7 +19,7 @@ string Particle::toString() {
     ss << scientific << "Position [m]:         |<" << this->pos.x << ", " << this->pos.y << ", " << this->pos.z << ">| = " << this->pos.magnitude() << endl <<
                         "Velocity [m/s]:       |<" << this->vel.x << ", " << this->vel.y << ", " << this->vel.z << ">| = " << this->vel.magnitude() << endl <<
                         "Acceleration [m/s^2]: |<" << this->acc.x << ", " << this->acc.y << ", " << this->acc.z << ">| = " << this->acc.magnitude() << endl <<
-                        "Net force [N]:        |<" << this->getForceAccum().x << ", " << this->getForceAccum().y << ", " << this->getForceAccum().z << ">| = " << this->acc.magnitude() * this->getMass() << endl <<
+                        "Net force [N]:        |<" << this->netForce.x << ", " << this->netForce.y << ", " << this->netForce.z << ">| = " << this->netForce.magnitude() << endl <<
                         "Kinetic Energy [J]: " << this->kineticEnergy() << endl;
 
     return ss.str();
@@ -32,8 +32,8 @@ void Particle::integrate(real duration) {
     assert(duration > 0.0);
 
     //Vec3 resultingAcc = acc;
-    //resultingAcc.addScaledVector(forceAccum, inverseMass);
-    acc.addScaledVector(forceAccum, inverseMass);
+    //resultingAcc.addScaledVector(netForce, inverseMass);
+    acc.addScaledVector(netForce, inverseMass);
 
     // Impose drag.
     vel *= real_pow(damping, duration);
@@ -48,10 +48,16 @@ void Particle::integrate(real duration) {
 
     // Clear forces
     clearAccumulator();
+
+    spdlog::info("Particle {} integrated and forces cleared", this->name);
 } // Particle::integrate()
 
 real Particle::kineticEnergy() {
     return .5 * ((real)1.0)/inverseMass * real_pow(vel.magnitude(), 2);
+}
+
+string Particle::getName() const {
+    return name;
 }
 
 // Set the mass (specfically the inverse mass) of the particle
@@ -132,17 +138,17 @@ real Particle::getMass() const {
 }
 
 void Particle::clearAccumulator() {
-    forceAccum.clear();
+    netForce.clear();
 }
 
 void Particle::addForce(const Vec3& f) {
-    forceAccum += f;
+    netForce += f;
 }
 
 bool Particle::hasFiniteMass() const {
     return inverseMass > 0.0;
 }
 
-Vec3 Particle::getForceAccum() const {
-    return forceAccum;
+Vec3 Particle::getNetForce() const {
+    return netForce;
 }

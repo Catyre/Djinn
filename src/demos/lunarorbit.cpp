@@ -2,11 +2,11 @@
  * @file lunarorbit.cpp
  * @brief Simulate the orbit of the Moon around Earth, and give output of the dynamics to stdout
  * @author Catyre
- * @date 11-10-2022
 */
 
 #include "engine/particle.h"
 #include "engine/pfgen.h"
+//#include "engine/logger.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 // #include "spdlog/fmt/fmt.h"
@@ -45,7 +45,7 @@ int main() {
         auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log", true);
         spdlog::set_default_logger(logger);
     } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log init failed: " << ex.what() << std::endl;
+        cout << "Log init failed: " << ex.what() << endl;
         return 0;
     }
 
@@ -80,8 +80,8 @@ int main() {
     Vec3 earth_vi = Vec3(0, 0, 0);
     Vec3 earth_ai = Vec3(0, 0, 0);
 
-    Particle *moon = new Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS);
-    Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS);
+    Particle *moon = new Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
+    Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
 
     // Time resolution
     real dt = 1e3; // [s]
@@ -100,15 +100,25 @@ int main() {
     while(!WindowShouldClose()) {
         // Increment frame
         frame += 1;
+
         // Output to log
         spdlog::info("Frame: {}", frame);
         spdlog::info("Moon position:     {} | Earth position:     {}", moon->getPosition().toString(), earth->getPosition().toString());
         spdlog::info("Moon velocity:     {} | Earth velocity:     {}", moon->getVelocity().toString(), earth->getVelocity().toString());
         spdlog::info("Moon acceleration: {} | Earth Acceleration: {}", moon->getAcceleration().toString(), earth->getAcceleration().toString());
+        spdlog::info("Moon net force:    {} | Earth net force:    {}", moon->getNetForce().toString(), earth->getNetForce().toString());
         spdlog::info("---------------------------------------------------------------------------------------------------------------------------");
 
+        // cout << "Frame: " << frame << endl;
+        // cout << "Moon:" << endl << moon->toString() << "Earth:" << endl << earth->toString() << endl;
+
         gravityRegistry.applyGravity();
-        gravityRegistry.integrateAll(dt);
+        
+        moon->integrate(dt);
+        earth->integrate(dt);
+
+        // Alternatively:
+        //gravityRegistry.integrateAll(dt);
 
         Vec3 moon_x = moon->getPosition() * 1e-7;
         Vec3 earth_x = earth->getPosition() * 1e-7; // Scale down to hundreds of km

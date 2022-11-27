@@ -14,8 +14,5 @@ springmass : src/demos/springmass.cpp src/particle.cpp src/pfgen.cpp
 ballistic : src/demos/ballistic/ballistic.cpp
 	$(CC) $(CFLAGS) -o src/demos/ballistic src/demos/ballistic/ballistic.cpp
 
-MCVE : src/demos/MCVE.cpp
-	$(CC) $(CFLAGS) -o src/demos/MCVE src/demos/MCVE.cpp
-
 
 
