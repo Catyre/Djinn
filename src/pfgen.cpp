@@ -33,15 +33,15 @@ void ParticleUniversalForceRegistry::add(Particle* particle) {
     registration.particle = particle;
     
     // Don't add duplicates
-        if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
-            registrations.push_back(registration);
+    if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
+        registrations.push_back(registration);
 
-            // Log registration
-            spdlog::info("Added particle \"{}\" to universal force registry", particle->getName());
-        } else {
-            // Log discard
-            spdlog::info("Particle \"{}\" already in universal force registry...discarding", particle->getName());
-        }
+        // Log registration
+        spdlog::info("Added particle \"{}\" to universal force registry", particle->getName());
+    } else {
+        // Log discard
+        spdlog::info("Particle \"{}\" already in universal force registry...discarding", particle->getName());
+    }
 }
 
 void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
