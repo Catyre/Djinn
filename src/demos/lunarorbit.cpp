@@ -1,6 +1,6 @@
 /**
  * @file lunarorbit.cpp
- * @brief Simulate the orbit of the Moon around Earth, and give output of the dynamics to stdout
+ * @brief Simulate the orbit of the Moon around Earth, and give output of the dynamics to logs/lunarorbit.log
  * @author Catyre
 */
 
@@ -10,6 +10,7 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "raylib.h"
 #include "rlgl.h"
+#include "rlFPCamera.h"
 
 #define CAMERA_IMPLEMENTATION
 
@@ -55,15 +56,11 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Djinn - Lunar Orbit Demo");
 
     // Define the camera to look into our 3d world (position, target, up vector)
-    Camera camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 0.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
-
-    SetCameraMode(camera, CAMERA_FIRST_PERSON); // Set a first person camera mode
-    SetCameraMoveControls(KEY_W, KEY_S, KEY_D, KEY_A, KEY_SPACE, KEY_LEFT_SHIFT);
+    rlFPCamera cam;
+	cam.Setup(45, Vector3{ 0, 10, 0 });
+	cam.MoveSpeed.z = 10;
+	cam.MoveSpeed.x = 10;
+    cam.MoveSpeed.y = 10;
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -82,14 +79,25 @@ int main() {
     Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
 
     // Time resolution
-    real dt = 1e3; // [s]
+    real dt = 1e2; // [s]
 
     // Define force registry
     ParticleUniversalForceRegistry gravityRegistry;
+    ParticleForceRegistry registry;
+
+    // Define force generators
+    ParticlePointGravity *earthGravity = new ParticlePointGravity(earth->getPosition(), EARTHMASS);
+    ParticlePointGravity *moonGravity = new ParticlePointGravity(moon->getPosition(), MOONMASS);
 
     // Register force generators with the particle
+    // gravityRegistry.add(moon);
+    // gravityRegistry.add(earth);
+    registry.add(moon, earthGravity);
+    registry.add(earth, moonGravity);
+
+    // Deliberately added to demonstrate that the force registry will only take one copy of any given particle 
+    //  and discard the duplicates (see logs/lunarorbit.log)
     gravityRegistry.add(moon);
-    gravityRegistry.add(earth);
 
     // Alternatively:
     //gravityRegistry.add(vector<Particle*>{moon, earth});
@@ -99,9 +107,12 @@ int main() {
         // Increment frame
         frame += 1;
 
-        gravityRegistry.applyGravity();
+        //gravityRegistry.applyGravity();
+        registry.updateForces(dt);
+        earthGravity->setOrigin(earth->getPosition());
 
         // Output to log
+        spdlog::info("---------------------------------------------------------------------------------------------------------------------------");
         spdlog::info("Frame: {}", frame);
         spdlog::info("Moon position:     {} | Earth position:     {}", moon->getPosition().toString(), earth->getPosition().toString());
         spdlog::info("Moon velocity:     {} | Earth velocity:     {}", moon->getVelocity().toString(), earth->getVelocity().toString());
@@ -121,12 +132,13 @@ int main() {
         Vector3 rl_moon_x = moon_x.toVector3();
         Vector3 rl_earth_x = earth_x.toVector3();
 
-        UpdateCamera(&camera);
+
+        cam.Update();
 
         BeginDrawing();
             ClearBackground(BLACK);
 
-            BeginMode3D(camera);
+            cam.BeginMode3D();
 
                 DrawGrid(100, 1.0f);        // Draw a grid
                 DrawSphere(rl_moon_x, 1, WHITE);
@@ -135,7 +147,7 @@ int main() {
                 DrawSphere(rl_earth_x, EARTHRADIUS/MOONRADIUS, BLUE);
                 DrawText3D(GetFontDefault(), "Earth", Vec3(earth_x.x, 6, earth_x.z).toVector3(), 10, 1, 1, true, WHITE);
 
-            EndMode3D();
+            cam.EndMode3D();
 
             DrawRectangle(10, 30, 125, 75, Fade(SKYBLUE, 0.5f));
             DrawRectangleLines(10, 30, 125, 75, BLUE);

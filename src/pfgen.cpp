@@ -33,10 +33,15 @@ void ParticleUniversalForceRegistry::add(Particle* particle) {
     registration.particle = particle;
     
     // Don't add duplicates
-    if (find(begin(registrations), end(registrations), registration) == end(registrations)) registrations.push_back(registration);
-    
-    // Log registration
-    spdlog::info("Added particle \"{}\" to universal force registry", particle->getName());
+        if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
+            registrations.push_back(registration);
+
+            // Log registration
+            spdlog::info("Added particle \"{}\" to universal force registry", particle->getName());
+        } else {
+            // Log discard
+            spdlog::info("Particle \"{}\" already in universal force registry...discarding", particle->getName());
+        }
 }
 
 void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
@@ -58,7 +63,7 @@ void ParticleUniversalForceRegistry::add(vector<Particle*> particles) {
 }
 
 void ParticleUniversalForceRegistry::remove(Particle* particle) {
-    for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
+    for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         if (i->particle == particle) {
             registrations.erase(i);
 
@@ -70,8 +75,8 @@ void ParticleUniversalForceRegistry::remove(Particle* particle) {
 }
 
 void ParticleUniversalForceRegistry::applyGravity() {
-    for(Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
-        for(Registry::iterator j = registrations.begin(); j != registrations.end(); j++) {
+    for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
+        for (Registry::iterator j = registrations.begin(); j != registrations.end(); j++) {
             if (i->particle != j->particle) {
                 Vec3 r = i->particle->getPosition() - j->particle->getPosition();
                 real rMagSquared = r.squareMagnitude();
@@ -80,7 +85,7 @@ void ParticleUniversalForceRegistry::applyGravity() {
                 i->particle->addForce(force);
 
                 // Log force application
-                spdlog::info("Applied gravitational force to particle \"{}\" ({})", i->particle->getName(), force.toString());
+                spdlog::info("Applied gravitational force from \"{}\" on \"{}\" ({} N)", j->particle->getName(), i->particle->getName(), force.toString());
             }
         }
     }
@@ -109,7 +114,15 @@ void ParticleForceRegistry::add(Particle* particle, ParticleForceGenerator* fg) 
     registration.fg = fg;
 
     // Add to the list of registrations only if it's not already in it
-    if (find(begin(registrations), end(registrations), registration) == end(registrations)) registrations.push_back(registration);
+    if (find(begin(registrations), end(registrations), registration) == end(registrations)) {
+        registrations.push_back(registration);
+
+        // Log registration
+        spdlog::info("Added particle \"{}\" to force registry", particle->getName());
+    } else {
+        // Log discard
+        spdlog::info("Particle \"{}\" already in force registry...discarding", particle->getName());
+    }
 }
 
 void ParticleForceRegistry::integrateAll(real duration) {
