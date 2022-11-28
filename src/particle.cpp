@@ -35,25 +35,25 @@ void Particle::integrate(real duration) {
 
     assert(duration > 0.0);
 
-    //Vec3 resultingAcc = acc;
-    //resultingAcc.addScaledVector(netForce, inverseMass);
+    Vec3 pos_i = pos;
+
     acc.addScaledVector(netForce, inverseMass);
 
     // Impose drag.
     vel *= real_pow(damping, duration);
 
     // Update linear velocity from the acceleration.
-    //vel.addScaledVector(resultingAcc, duration);
     vel.addScaledVector(acc, duration);
 
     // Update linear position.
     pos.addScaledVector(vel, duration);
-    // pos.addScaledVector(acc, duration * duration * 0.5);
+    Vec3 delta_x = pos - pos_i;
 
-    // Clear forces
+    // Clear forces and acceleration
     clearAccumulator();
+    acc = Vec3();
 
-    spdlog::info("Particle \"{}\" integrated and forces cleared", this->name);
+    spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
 } // Particle::integrate()
 
 real Particle::kineticEnergy() {

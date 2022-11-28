@@ -4,7 +4,7 @@
  * @author Catyre
 */
 
-/* FORCES TO IMPLMENT
+/* FORCES TO IMPLEMENT:
  *  Bouyancy
  *  Friction
  *  Electricity
