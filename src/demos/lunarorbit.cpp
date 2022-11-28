@@ -18,7 +18,7 @@
 // Set some physical values for the simulation
 #define MOONMASS 7.34767309e22 // [kg]
 #define MOONORBIT 3.844e8 // [m]
-#define MOONVELOCITY 1.023e3 // [m/s]
+#define MOONSPEED 1.023e3 // [m/s]
 #define MOONRADIUS 1.737e6 // [m]
 #define EARTHMASS 5.97219e24 // [kg]
 #define EARTHRADIUS 6.371e6 // [m]
@@ -56,7 +56,7 @@ int main() {
     // Initial conditions are at the rightmost point of the orbit (looking down on the system), 
     //   where the position is only in x and the velocity is only in z
     Vec3 moon_xi = Vec3(MOONORBIT, 0, 0); // [m]
-    Vec3 moon_vi = Vec3(0, 0, MOONVELOCITY); // [m/s]
+    Vec3 moon_vi = Vec3(0, 0, MOONSPEED); // [m/s]
     Vec3 moon_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Vec3 earth_xi = Vec3(0, 0, 0);
@@ -67,21 +67,14 @@ int main() {
     Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
 
     // Time resolution
-    real dt = 1e2; // [s]
+    real dt = 1e3; // [s]
 
     // Define force registry
     ParticleUniversalForceRegistry gravityRegistry;
-    // ParticleForceRegistry registry;
-
-    // Define force generators
-    // ParticlePointGravity *earthGravity = new ParticlePointGravity(earth->getPosition(), EARTHMASS);
-    // ParticlePointGravity *moonGravity = new ParticlePointGravity(moon->getPosition(), MOONMASS);
 
     // Register force generators with the particle
     gravityRegistry.add(moon);
     gravityRegistry.add(earth);
-    // registry.add(moon, earthGravity);
-    // registry.add(earth, moonGravity);
 
     // Deliberately added to demonstrate that the force registry will only take one copy of any given particle 
     //  and discard the duplicates (see logs/lunarorbit.log)
@@ -96,8 +89,6 @@ int main() {
         frame += 1;
 
         gravityRegistry.applyGravity();
-        // registry.updateForces(dt);
-        // earthGravity->setOrigin(earth->getPosition());
 
         // Output to log
         spdlog::info("---------------------------------------------------------------------------------------------------------------------------");
