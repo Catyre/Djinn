@@ -160,8 +160,6 @@ void ParticleEarthGravity::updateForce(Particle* particle, real duration) {
     // Calculate force
     Vec3 force =  gravity * particle->getMass();
 
-    //particle->addForce(particle->getMass() * gravity);
-
     // Apply force to the particle
     particle->addForce(force);
     // Log force application
