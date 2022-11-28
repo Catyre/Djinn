@@ -5,8 +5,8 @@ RLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs
 lunarorbit : src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
 	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/lunarorbit src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
 
-solarsystem : src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp
-	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/solarsystem src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp
+solarsystem : src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
+	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/solarsystem src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
 
 springmass : src/demos/springmass.cpp src/particle.cpp src/pfgen.cpp
 	$(CC) $(CFLAGS) -o src/demos/springmass src/demos/springmass.cpp src/particle.cpp src/pfgen.cpp
