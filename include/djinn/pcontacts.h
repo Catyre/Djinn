@@ -7,6 +7,9 @@
 #ifndef PCONTACTS_H
 #define PCONTACTS_H
 
+#include "core.h"
+#include "particle.h"
+
 namespace djinn {
     /**
     * A contact represents two objects in contact (in this case
