@@ -19,32 +19,32 @@
 // Set some physical values for the simulation
 #define SOLARMASS 1.989e30 // [kg]
 #define SOLARORBIT 0 // [m]
-#define SOLARVELOCITY 0 // [m/s] 
+#define SOLARSPEED 0 // [m/s] 
 #define SOLARRADIUS 6.957e8 // [m]
 
 #define MERCMASS 3.285e23 // [kg]
 #define MERCORBIT 5.790e10 // [m]
-#define MERCVELOCITY 4.790e4 // [m/s]
+#define MERCSPEED 4.790e4 // [m/s]
 #define MERCRADIUS 2.439e6 // [m]
 
 #define VENUSMASS 4.867e24 // [kg]
 #define VENUSORBIT 1.082e11 // [m]
-#define VENUSVELOCITY 3.500e4 // [m/s]
+#define VENUSSPEED 3.500e4 // [m/s]
 #define VENUSRADIUS 6.051e6 // [m]
 
 #define EARTHMASS 5.97219e24 // [kg]
 #define EARTHORBIT 1.496e11 // [m]
-#define EARTHVELOCITY 2.978e4 // [m/s] (Relative to Sun)
+#define EARTHSPEED 2.978e4 // [m/s] (Relative to Sun)
 #define EARTHRADIUS 6.371e6 // [m]
 
 #define MOONMASS 7.34767309e22 // [kg]
 #define MOONORBIT 3.844e8 // [m]
-#define MOONVELOCITY 1.023e3 // [m/s] (Relative to Earth)
+#define MOONSPEED 1.023e3 // [m/s] (Relative to Earth)
 #define MOONRADIUS 1.737e6 // [m]
 
 #define MARSMASS 6.39e23 // [kg]
 #define MARSORBIT 2.279e11 // [m]
-#define MARSVELOCITY 2.41e4 // [m/s] (Relative to Sun)
+#define MARSSPEED 2.41e4 // [m/s] (Relative to Sun)
 #define MARSRADIUS 3.3895e6 // [m]
 
 using namespace djinn;
@@ -80,23 +80,23 @@ int main() {
     // Initial conditions are at the rightmost point of the orbit (looking down on the system), 
     //   where the position is only in x and the velocity is only in z
     Vec3 moon_xi = Vec3(MOONORBIT + EARTHORBIT, 0, 0); // [m]
-    Vec3 moon_vi = Vec3(0, 0, MOONVELOCITY + EARTHVELOCITY); // [m/s]
+    Vec3 moon_vi = Vec3(0, 0, MOONSPEED + EARTHSPEED); // [m/s]
     Vec3 moon_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Vec3 earth_xi = Vec3(EARTHORBIT, 0, 0); // [m]
-    Vec3 earth_vi = Vec3(0, 0, EARTHVELOCITY); // [m/s]
+    Vec3 earth_vi = Vec3(0, 0, EARTHSPEED); // [m/s]
     Vec3 earth_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Vec3 mars_xi = Vec3(MARSORBIT, 0, 0); // [m]
-    Vec3 mars_vi = Vec3(0, 0, MARSVELOCITY); // [m/s]
+    Vec3 mars_vi = Vec3(0, 0, MARSSPEED); // [m/s]
     Vec3 mars_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Vec3 venus_xi = Vec3(VENUSORBIT, 0, 0); // [m]
-    Vec3 venus_vi = Vec3(0, 0, VENUSVELOCITY); // [m/s]
+    Vec3 venus_vi = Vec3(0, 0, VENUSSPEED); // [m/s]
     Vec3 venus_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Vec3 mercury_xi = Vec3(MERCORBIT, 0, 0); // [m]
-    Vec3 mercury_vi = Vec3(0, 0, MERCVELOCITY); // [m/s]
+    Vec3 mercury_vi = Vec3(0, 0, MERCSPEED); // [m/s]
     Vec3 mercury_ai = Vec3(0, 0, 0); // [m/s^2]
 
     Particle *sol = new Particle(Vec3(), Vec3(), Vec3(), 1, 1/SOLARMASS, "Sol");
@@ -115,13 +115,30 @@ int main() {
     ParticleUniversalForceRegistry gravityRegistry;
 
     vector<Particle*> particles = {earth, moon, mars, venus, mercury, sol};
-    // vector<Particle*> particles = {earth, sol};
 
     gravityRegistry.add(particles);
 
+    int frame = 0;
     while(!WindowShouldClose()) {
+        // Increment frame counter
+        frame += 1;
+
+        // Apply gravity to each particle
         gravityRegistry.applyGravity();
 
+        // Log the data
+        spdlog::info("----------------------------------------------------------------------------------------------------------------------------");
+        spdlog::info("Frame: {}", frame);
+        
+        for (auto p : particles) {
+            spdlog::info("Particle: {}", p->getName());
+            spdlog::info("Position: {}", p->getPosition().toString());
+            spdlog::info("Velocity: {}", p->getVelocity().toString());
+            spdlog::info("Acceleration: {}", p->getAcceleration().toString());
+            spdlog::info("----------------------------------------------------------------------------------------------------------------------------");
+        }
+
+        // Update the positions of each particle
         gravityRegistry.integrateAll(dt);
 
         // Convert my Vec3 object to a Raylib Vector3 object and scale down to tens of meters
@@ -192,6 +209,8 @@ int main() {
             DrawFPS(10, 10);
 
         EndDrawing();
+
+        spdlog::info("============================================================================================================================");
 
     }
 
