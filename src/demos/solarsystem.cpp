@@ -47,6 +47,11 @@
 #define MARSSPEED 2.41e4 // [m/s] (Relative to Sun)
 #define MARSRADIUS 3.3895e6 // [m]
 
+#define JUPITERMASS 1.898e27 // [kg]
+#define JUPITERORBIT 7.785e11 // [m]
+#define JUPITERSPEED 1.31e4 // [m/s] (Relative to Sun)
+#define JUPITERRADIUS 6.9911e7 // [m]
+
 using namespace djinn;
 using namespace std;
 
@@ -69,10 +74,10 @@ int main() {
 
     // Define the camera to look into our 3d world (position, target, up vector)
     rlFPCamera cam;
-	cam.Setup(45, Vector3{ 0, 10, 0 });
-	cam.MoveSpeed.z = 10;
-	cam.MoveSpeed.x = 10;
-    cam.MoveSpeed.y = 10;
+	cam.Setup(45, Vector3{ 0, 200, 0 });
+	cam.MoveSpeed.z = 200;
+	cam.MoveSpeed.x = 200;
+    cam.MoveSpeed.y = 200;
 
     SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -99,22 +104,27 @@ int main() {
     Vec3 mercury_vi = Vec3(0, 0, MERCSPEED); // [m/s]
     Vec3 mercury_ai = Vec3(0, 0, 0); // [m/s^2]
 
+    Vec3 jupiter_xi = Vec3(JUPITERORBIT, 0, 0); // [m]
+    Vec3 jupiter_vi = Vec3(0, 0, JUPITERSPEED); // [m/s]
+    Vec3 jupiter_ai = Vec3(0, 0, 0); // [m/s^2]
+
     Particle *sol = new Particle(Vec3(), Vec3(), Vec3(), 1, 1/SOLARMASS, "Sol");
     Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
     Particle *moon = new Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
     Particle *mars = new Particle(mars_xi, mars_vi, mars_ai, 1, 1/MARSMASS, "Mars");
     Particle *venus = new Particle(venus_xi, venus_vi, venus_ai, 1, 1/VENUSMASS, "Venus");
     Particle *mercury = new Particle(mercury_xi, mercury_vi, mercury_ai, 1, 1/MERCMASS, "Mercury");
+    Particle *jupiter = new Particle(jupiter_xi, jupiter_vi, jupiter_ai, 1, 1/JUPITERMASS, "Jupiter");
 
-    real scale = 1e-10;
+    real scale = 2.5e-9;
 
     // Time resolution
-    real dt = 1e4; // [s]
+    real dt = 1e3; // [s]
 
     // Define force registry
     ParticleUniversalForceRegistry gravityRegistry;
 
-    vector<Particle*> particles = {earth, moon, mars, venus, mercury, sol};
+    vector<Particle*> particles = {sol, mercury, venus, earth, moon, mars, jupiter};
 
     gravityRegistry.add(particles);
 
@@ -148,6 +158,7 @@ int main() {
         Vector3 rl_venus_x = (venus->getPosition() * scale).toVector3();
         Vector3 rl_mercury_x = (mercury->getPosition() * scale).toVector3();
         Vector3 rl_sol_x = (sol->getPosition() * scale).toVector3();
+        Vector3 rl_jupiter_x = (jupiter->getPosition() * scale).toVector3();
 
         cam.Update();
 
@@ -156,55 +167,41 @@ int main() {
 
             cam.BeginMode3D();
 
-                DrawGrid(100, 1.0f);        // Draw a grid
-                DrawSphere(rl_earth_x, 0.25, BLUE); // Draw earth
-                DrawText3D(GetFontDefault(), earth->getName().c_str(), (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
-                //DrawLine3D((Vector3){rl_earth_x.x-1, 0, rl_earth_x.z-1}, *rl_earth_x, BLUE);
+                DrawGrid(3000, 100.0f);        // Draw a grid
 
-                DrawSphere(rl_moon_x, 0.1, GRAY); // Draw moon
+                DrawSphere(rl_earth_x, 1, BLUE); // Draw earth
+                DrawText3D(GetFontDefault(), earth->getName().c_str(), (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
+
+                DrawSphere(rl_moon_x, MOONRADIUS/EARTHRADIUS, GRAY); // Draw moon
                 DrawText3D(GetFontDefault(), moon->getName().c_str(), (Vector3){rl_moon_x.x, 4, rl_moon_x.z}, 10, 1, 1, true, WHITE); // Label Moon
 
-                DrawSphere(rl_mars_x, 0.2, RED); // Draw mars
-                DrawText3D(GetFontDefault(), mars->getName().c_str(), (Vector3){rl_mars_x.x, 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
+                DrawSphere(rl_mars_x, MARSRADIUS/EARTHRADIUS , RED); // Draw mars
+                DrawText3D(GetFontDefault(), mars->getName().c_str(), (Vector3){rl_mars_x.x, MARSRADIUS/EARTHRADIUS + 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
 
-                DrawSphere(rl_venus_x, 0.2, BEIGE); // Draw venus
-                DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
+                DrawSphere(rl_venus_x, VENUSRADIUS/EARTHRADIUS, BEIGE); // Draw venus
+                DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, VENUSRADIUS/EARTHRADIUS + 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
 
-                DrawSphere(rl_mercury_x, 0.1, ORANGE); // Draw mercury
-                DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
+                DrawSphere(rl_mercury_x, MERCRADIUS/EARTHRADIUS, ORANGE); // Draw mercury
+                DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, MERCRADIUS/EARTHRADIUS + 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
 
-                DrawSphere(rl_sol_x, 1, YELLOW); // Draw Sol
-                DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
+                DrawSphere(rl_sol_x, SOLARRADIUS/EARTHRADIUS, YELLOW); // Draw Sol
+                DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, SOLARRADIUS/EARTHRADIUS + 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
+
+                DrawSphere(rl_jupiter_x, JUPITERRADIUS/EARTHRADIUS, BROWN); // Draw Jupiter
+                DrawText3D(GetFontDefault(), jupiter->getName().c_str(), (Vector3){rl_jupiter_x.x, JUPITERRADIUS/EARTHRADIUS + 2, rl_jupiter_x.z}, 10, 1, 1, true, WHITE); // Label Jupiter
 
             cam.EndMode3D();
 
-            DrawRectangle(10, 30, 300, 75, Fade(SKYBLUE, 0.5f));
-            DrawRectangleLines(10, 30, 300, 75, BLUE);
+            DrawRectangle(10, 30, 420, 75, Fade(SKYBLUE, 0.5f));
+            DrawRectangleLines(10, 30, 420, 75, BLUE);
 
-            DrawText("Earth:", 20, 40, 10, WHITE);
-            DrawText(TextFormat("X: %02.02f", rl_earth_x.x), 20, 55, 10, WHITE);
-            DrawText(TextFormat("Y: %02.02f", rl_earth_x.y), 20, 70, 10, WHITE);
-            DrawText(TextFormat("Z: %02.02f", rl_earth_x.z), 20, 85, 10, WHITE);
-
-            DrawText("Moon:", 80, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x.x), 80, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x.y), 80, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_moon_x.z), 80, 85, 10, WHITE);
-
-            DrawText("Mars:", 140, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x.x), 140, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x.y), 140, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mars_x.z), 140, 85, 10, WHITE);
-
-            DrawText("Venus:", 200, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x.x), 200, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x.y), 200, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_venus_x.z), 200, 85, 10, WHITE);
-
-            DrawText("Mercury:", 260, 40, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x.x), 260, 55, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x.y), 260, 70, 10, WHITE);
-            DrawText(TextFormat("%02.02f", rl_mercury_x.z), 260, 85, 10, WHITE);
+            for (auto p : particles) {
+                int idx = find(begin(particles), end(particles), p) - begin(particles);
+                DrawText(p->getName().c_str(), 20 + 60 * idx, 40, 10, WHITE);
+                DrawText(TextFormat("X: %02.02f", p->getPosition().x * scale), 20 + 60 * idx, 55, 10, WHITE);
+                DrawText(TextFormat("Y: %02.02f", p->getPosition().y * scale), 20 + 60 * idx, 70, 10, WHITE);
+                DrawText(TextFormat("Z: %02.02f", p->getPosition().z * scale), 20 + 60 * idx, 85, 10, WHITE);
+            }
 
             DrawFPS(10, 10);
 
@@ -216,8 +213,13 @@ int main() {
 
     CloseWindow();
 
-    //delete pointGravity;
+    delete sol;
+    delete mercury;
+    delete venus;
     delete earth;
+    delete moon;
+    delete mars;
+    delete jupiter;
 
     return 0;
 }
