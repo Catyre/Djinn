@@ -22,7 +22,6 @@
 #include <iostream>
 #include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
 #include <algorithm>
 
 using namespace djinn;
