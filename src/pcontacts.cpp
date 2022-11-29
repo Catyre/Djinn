@@ -14,8 +14,8 @@ void ParticleContact::resolve(real duration) {
 } // ParticleContact::resolve
 
 real ParticleContact::calculateSeparatingVelocity() const {
-    Vector3 relativeVelocity = particle[0]->getVelocity();
-    if (particle[1]) relativeVelocity -= particle[1]->getVelocity();
+    Vector3 relativeVelocity = particles[0]->getVelocity();
+    if (particles[1]) relativeVelocity -= particles[1]->getVelocity();
     return relativeVelocity * contactNormal;
 } // ParticleContact::calculateSeparatingVelocity
 
@@ -37,8 +37,8 @@ void ParticleContact::resolveVelocity(real duration) {
     // We apply the change in velocity to each object in proportion to
     // their inverse mass (i.e. those with lower inverse mass [higher
     // actual mass] get less change in velocity)..
-    real totalInverseMass = particle[0]->getInverseMass();
-    if (particle[1]) totalInverseMass += particle[1]->getInverseMass();
+    real totalInverseMass = particles[0]->getInverseMass();
+    if (particles[1]) totalInverseMass += particles[1]->getInverseMass();
 
     // If all particles have infinite mass, then impulses have no effect
     if (totalInverseMass <= 0) return;
@@ -51,11 +51,11 @@ void ParticleContact::resolveVelocity(real duration) {
 
     // Apply impulses: they are applied in the direction of the contact,
     // and are proportional to the inverse mass.
-    particle[0]->setVelocity(particle[0]->getVelocity() + impulsePerIMass * particle[0]->getInverseMass());
+    particles[0]->setVelocity(particles[0]->getVelocity() + impulsePerIMass * particles[0]->getInverseMass());
 
-    if (particle[1]) {
+    if (particles[1]) {
         // Particle 1 goes in the opposite direction
-        particle[1]->setVelocity(particle[1]->getVelocity() + impulsePerIMass * -particle[1]->getInverseMass());
+        particles[1]->setVelocity(particles[1]->getVelocity() + impulsePerIMass * -particles[1]->getInverseMass());
     }
 } // void ParticleContact::resolveVelocity
 
@@ -65,8 +65,8 @@ void ParticleContact::resolveInterpenetration(real duration) {
 
     // The movement of each object is based on their inverse mass, so
     // total that.
-    real totalInverseMass = particle[0]->getInverseMass();
-    if (particle[1]) totalInverseMass += particle[1]->getInverseMass();
+    real totalInverseMass = particles[0]->getInverseMass();
+    if (particles[1]) totalInverseMass += particles[1]->getInverseMass();
 
     // If all particles have infinite mass, then we do nothing
     if (totalInverseMass <= 0) return;
@@ -75,17 +75,17 @@ void ParticleContact::resolveInterpenetration(real duration) {
     Vector3 movePerIMass = contactNormal * (penetration / totalInverseMass);
 
     // Calculate the the movement amounts
-    particleMovement[0] = movePerIMass * particle[0]->getInverseMass();
+    particleMovement[0] = movePerIMass * particles[0]->getInverseMass();
 
-    if (particle[1]) {
-        particleMovement[1] = movePerIMass * -particle[1]->getInverseMass();
+    if (particles[1]) {
+        particleMovement[1] = movePerIMass * -particles[1]->getInverseMass();
     } else {
         particleMovement[1].clear();
     }
 
     // Apply the penetration resolution
-    particle[0]->setPosition(particle[0]->getPosition() + particleMovement[0]);
-    if (particle[1]) {
-        particle[1]->setPosition(particle[1]->getPosition() + particleMovement[1]);
+    particles[0]->setPosition(particles[0]->getPosition() + particleMovement[0]);
+    if (particles[1]) {
+        particles[1]->setPosition(particles[1]->getPosition() + particleMovement[1]);
     }
 }

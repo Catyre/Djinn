@@ -27,7 +27,7 @@ namespace djinn {
             * Holds the particles that are involved in the contact. The
             * second of these can be NULL for contacts with the scenery
             */
-            Particle* particle[2];
+            Particle* particles[2];
 
             // Holds the normal restitution coefficient at the contact
             real restitution;
@@ -37,12 +37,14 @@ namespace djinn {
 
             // Holds the depth of penetration at the contact point
             real penetration;
+
         protected:
             // Resolves this contact for both velocity and interpenetration
             void resolve(real duration);
 
             // Calculates the separating velocity at this contact
             real calculateSeparatingVelocity() const;
+
         private:
             // Handles the impulse calculations for this collision
             void resolveVelocity(real duration);
