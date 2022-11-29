@@ -1,6 +1,6 @@
 /**
  * @file solarsystem.cpp
- * @brief Simulate the orbit of the Moon around Earth, and Earth around Sol
+ * @brief Simulate the orbit of the inner planets around the sun
  * @author Catyre
  * @date 11-10-2022
 */
