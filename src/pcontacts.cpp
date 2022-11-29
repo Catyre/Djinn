@@ -32,6 +32,21 @@ void ParticleContact::resolveVelocity(real duration) {
 
     // Calculate the new separating velocity
     real newSepVelocity = -separatingVelocity * restitution;
+
+    // Check the velocity buildup due to acceleration only.
+    Vector3 accCausedVelocity = particle[0]->getAcceleration();
+    if (particle[1]) accCausedVelocity -= particle[1]->getAcceleration();
+    real accCausedSepVelocity = accCausedVelocity * contactNormal * duration;
+
+    // If we’ve got a closing velocity due to aceleration buildup,
+    // remove it from the new separating velocity.
+    if (accCausedSepVelocity < 0) {
+        newSepVelocity += restitution * accCausedSepVelocity;
+        // Make sure we haven’t removed more than was
+        // there to remove.
+        if (newSepVelocity < 0) newSepVelocity = 0;
+    }
+
     real deltaVelocity = newSepVelocity - separatingVelocity;
 
     // We apply the change in velocity to each object in proportion to
@@ -88,4 +103,52 @@ void ParticleContact::resolveInterpenetration(real duration) {
     if (particles[1]) {
         particles[1]->setPosition(particles[1]->getPosition() + particleMovement[1]);
     }
-}
+} // void ParticleContact::resolveInterpenetration
+
+void ParticleContactResolver::setIterations(unsigned iterations) {
+    ParticleContactResolver::iterations = iterations;
+} // void ParticleContactResolver::setIterations
+
+void ParticleContactResolver::resolveContacts(ParticleContact *particleArray, unsigned numContacts, real duration) {
+    unsigned i;
+
+    iterationsUsed = 0;
+    while (iterationsUsed < iterations) {
+        // Find the contact with the largest closing velocity;
+        real max = REAL_MAX;
+        unsigned maxIndex = numContacts;
+        for (i = 0; i < numContacts; i++) {
+            real sepVel = particleArray[i].calculateSeparatingVelocity();
+            if (sepVel < max && (sepVel < 0 || particleArray[i].penetration > 0)) {
+                max = sepVel;
+                maxIndex = i;
+            }
+        }
+
+        // Do we have anything worth resolving?
+        if (maxIndex == numContacts) break;
+
+        // Resolve this contact
+        particleArray[maxIndex].resolve(duration);
+
+        // Update the interpenetrations for all particles
+        Vector3 *move = particleArray[maxIndex].particleMovement;
+        for (i = 0; i < numContacts; i++) {
+            if (particleArray[i].particles[0] == particleArray[maxIndex].particles[0]) {
+                particleArray[i].penetration -= move[0] * particleArray[i].contactNormal;
+            } else if (particleArray[i].particles[0] == particleArray[maxIndex].particles[1]) {
+                particleArray[i].penetration -= move[1] * particleArray[i].contactNormal;
+            }
+
+            if (particleArray[i].particles[1]) {
+                if (particleArray[i].particles[1] == particleArray[maxIndex].particles[0]) {
+                    particleArray[i].penetration += move[0] * particleArray[i].contactNormal;
+                } else if (particleArray[i].particles[1] == particleArray[maxIndex].particles[1]) {
+                    particleArray[i].penetration += move[1] * particleArray[i].contactNormal;
+                }
+            }
+        }
+
+        iterationsUsed++;
+    }
+} // void ParticleContactResolver::resolveContacts

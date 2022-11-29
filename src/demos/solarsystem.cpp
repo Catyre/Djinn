@@ -2,7 +2,7 @@
  * @file solarsystem.cpp
  * @brief Simulate the orbit of the inner planets and jupiter around the sun
  * @author Catyre
- * @date 11-10-2022
+ * @date 11-29-2022
 */
 
 #include "djinn/particle.h"

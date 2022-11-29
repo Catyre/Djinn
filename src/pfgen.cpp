@@ -19,10 +19,11 @@
  */
 
 #define G 6.67408e-11 // [m^3 kg^-1 s^-2]
+
 #include <iostream>
+#include <algorithm>
 #include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
-#include <algorithm>
 
 using namespace djinn;
 using namespace std;
