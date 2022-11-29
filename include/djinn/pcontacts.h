@@ -22,24 +22,30 @@ namespace djinn {
         public:
             /**
             * Holds the particles that are involved in the contact. The
-            * second of these can be NULL for contacts with the scenery.
+            * second of these can be NULL for contacts with the scenery
             */
             Particle* particle[2];
-            
-            // Holds the normal restitution coefficient at the contact.
+
+            // Holds the normal restitution coefficient at the contact
             real restitution;
 
-            // Holds the direction of the contact in world coordinates.
+            // Holds the direction of the contact in world coordinates
             Vector3 contactNormal;
+
+            // Holds the depth of penetration at the contact point
+            real penetration;
         protected:
-            // Resolves this contact for both velocity and interpenetration.
+            // Resolves this contact for both velocity and interpenetration
             void resolve(real duration);
 
-            // Calculates the separating velocity at this contact.
+            // Calculates the separating velocity at this contact
             real calculateSeparatingVelocity() const;
         private:
-            // Handles the impulse calculations for this collision.
+            // Handles the impulse calculations for this collision
             void resolveVelocity(real duration);
+
+            // Handles the interpenetration resolution for this contact
+            void resolveInterpenetration(real duration);
     };
 };
 
