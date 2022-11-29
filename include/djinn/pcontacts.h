@@ -7,7 +7,6 @@
 #ifndef PCONTACTS_H
 #define PCONTACTS_H
 
-#include "core.h"
 #include "particle.h"
 
 namespace djinn {
@@ -22,6 +21,9 @@ namespace djinn {
     * contact resolver class.
     */
     class ParticleContact {
+        // The contact resolver object needs access into the contacts to set and effect the contact
+        friend class ParticleContactResolver;
+
         public:
             /**
             * Holds the particles that are involved in the contact. The
@@ -33,10 +35,13 @@ namespace djinn {
             real restitution;
 
             // Holds the direction of the contact in world coordinates
-            Vector3 contactNormal;
+            Vec3 contactNormal;
 
             // Holds the depth of penetration at the contact point
             real penetration;
+
+            // Holds the amount each particle is moved by during interpenetration resolution
+            Vec3 particleMovement[2];
 
         protected:
             // Resolves this contact for both velocity and interpenetration
@@ -69,10 +74,26 @@ namespace djinn {
             // Sets the number of iterations that can be used
             void setIterations(unsigned iterations);
 
-            // Resolves a set of particle contacts for both penetration
-            // and velocity
+            // Resolves a set of particle contacts for both penetration and velocity
             void resolveContacts(ParticleContact* contactArray, unsigned numContacts, real duration);
     }; // class ParticleContactResolver
+
+    /**
+     * This is the basic polymorphic interface for contact generators
+     * applying to particles.
+     */
+    class ParticleContactGenerator {
+        public:
+            /**
+             * Fills the given contact structure with the generated
+             * contact. The contact pointer should point to the first
+             * available contact in a contact array, where limit is the
+             * maximum number of contacts in the array that can be written
+             * to. The method returns the number of contacts that have
+             * been written.
+             */
+            virtual unsigned addContact(ParticleContact *contact, unsigned limit) const = 0;
+    }; // class ParticleContactGenerator
 };
 
-#endif
+#endif // PCONTACTS_H

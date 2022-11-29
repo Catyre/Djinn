@@ -141,6 +141,10 @@ real Particle::getMass() const {
     }
 }
 
+real Particle::getInverseMass() const {
+    return inverseMass;
+}
+
 void Particle::clearAccumulator() {
     netForce.clear();
 }

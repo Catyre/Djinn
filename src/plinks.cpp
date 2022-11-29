@@ -10,26 +10,27 @@
 using namespace djinn;
 
 real ParticleLink::currentLength() const {
-    Vec3 relativePos = particle[0]->getPosition() -
-    particle[1]->getPosition();
+    Vec3 relativePos = particles[0]->getPosition() -
+    particles[1]->getPosition();
     return relativePos.magnitude();
 }
 
 unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) const {
     // Find the length of the cable.
     real length = currentLength();
+
     // Check if we’re overextended.
     if (length < maxLength) {
         return 0;
     }
     // Otherwise, return the contact.
-    contact->particle[0] = particle[0];
-    contact->particle[1] = particle[1];
+    contact->particles[0] = particles[0];
+    contact->particles[1] = particles[1];
 
     // Calculate the normal.
-    Vec3 normal = particle[1]->getPosition() - particle[0]->getPosition();
+    Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
     normal.normalize();
-    
+
     contact->contactNormal = normal;
     contact->penetration = length-maxLength;
     contact->restitution = restitution;
@@ -45,11 +46,11 @@ unsigned ParticleRod::addContact(ParticleContact *contact, unsigned limit) const
         return 0;
     }
     // Otherwise, return the contact.
-    contact->particle[0] = particle[0];
-    contact->particle[1] = particle[1];
+    contact->particles[0] = particles[0];
+    contact->particles[1] = particles[1];
 
     // Calculate the normal.
-    Vec3 normal = particle[1]->getPosition() - particle[0]->getPosition();
+    Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
     normal.normalize();
 
     // The contact normal depends on whether we’re extending or compressing.

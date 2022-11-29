@@ -1,10 +1,10 @@
 /**
  * @file pcontacts.cpp
- * @brief Header file for the Particle class
+ * @brief .cpp file for the particle contacts class, which handles and resolves collisions between particles
  * @author Catyre
 */
 
-#include "pcontacts.h"
+#include "djinn/pcontacts.h"
 
 using namespace djinn;
 
@@ -14,7 +14,7 @@ void ParticleContact::resolve(real duration) {
 } // ParticleContact::resolve
 
 real ParticleContact::calculateSeparatingVelocity() const {
-    Vector3 relativeVelocity = particles[0]->getVelocity();
+    Vec3 relativeVelocity = particles[0]->getVelocity();
     if (particles[1]) relativeVelocity -= particles[1]->getVelocity();
     return relativeVelocity * contactNormal;
 } // ParticleContact::calculateSeparatingVelocity
@@ -34,8 +34,8 @@ void ParticleContact::resolveVelocity(real duration) {
     real newSepVelocity = -separatingVelocity * restitution;
 
     // Check the velocity buildup due to acceleration only.
-    Vector3 accCausedVelocity = particle[0]->getAcceleration();
-    if (particle[1]) accCausedVelocity -= particle[1]->getAcceleration();
+    Vec3 accCausedVelocity = particles[0]->getAcceleration();
+    if (particles[1]) accCausedVelocity -= particles[1]->getAcceleration();
     real accCausedSepVelocity = accCausedVelocity * contactNormal * duration;
 
     // If we’ve got a closing velocity due to aceleration buildup,
@@ -62,7 +62,7 @@ void ParticleContact::resolveVelocity(real duration) {
     real impulse = deltaVelocity / totalInverseMass;
 
     // Find the amount of impulse per unit of inverse mass
-    Vector3 impulsePerIMass = contactNormal * impulse;
+    Vec3 impulsePerIMass = contactNormal * impulse;
 
     // Apply impulses: they are applied in the direction of the contact,
     // and are proportional to the inverse mass.
@@ -78,6 +78,8 @@ void ParticleContact::resolveInterpenetration(real duration) {
     // If we don't have any penetration, skip this step
     if (penetration <= 0) return;
 
+    
+
     // The movement of each object is based on their inverse mass, so
     // total that.
     real totalInverseMass = particles[0]->getInverseMass();
@@ -87,7 +89,7 @@ void ParticleContact::resolveInterpenetration(real duration) {
     if (totalInverseMass <= 0) return;
 
     // Find the amount of penetration resolution per unit of inverse mass
-    Vector3 movePerIMass = contactNormal * (penetration / totalInverseMass);
+    Vec3 movePerIMass = contactNormal * (penetration / totalInverseMass);
 
     // Calculate the the movement amounts
     particleMovement[0] = movePerIMass * particles[0]->getInverseMass();
@@ -132,7 +134,7 @@ void ParticleContactResolver::resolveContacts(ParticleContact *particleArray, un
         particleArray[maxIndex].resolve(duration);
 
         // Update the interpenetrations for all particles
-        Vector3 *move = particleArray[maxIndex].particleMovement;
+        Vec3 *move = particleArray[maxIndex].particleMovement;
         for (i = 0; i < numContacts; i++) {
             if (particleArray[i].particles[0] == particleArray[maxIndex].particles[0]) {
                 particleArray[i].penetration -= move[0] * particleArray[i].contactNormal;

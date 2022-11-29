@@ -8,8 +8,7 @@
 #ifndef PLINKS_H
 #define PLINKS_H
 
-#include "core.h"
-#include "particle.h"
+#include "djinn/pcontacts.h"
 
 namespace djinn {
     /**
@@ -21,7 +20,7 @@ namespace djinn {
     class ParticleLink : public ParticleContactGenerator {
         public:
             // Holds the pair of particles that are connected by this link
-            Particle* particle[2];
+            Particle* particles[2];
 
         protected:
             // Returns the current length of the link
@@ -45,14 +44,33 @@ namespace djinn {
     }; // class ParticleLink
 
     /**
+     * Cables link a pair of particles, generating a contact if they
+     * stray too far apart.
+     */
+    class ParticleCable : public ParticleLink {
+        public:
+            // Holds the maximum length of the cable.
+            real maxLength;
+
+            // Holds the restitution (bounciness) of the cable.
+            real restitution;
+
+        public:
+            /**
+             * Fills the given contact structure with the contact needed
+             * to keep the cable from over-extending.
+             */
+            virtual unsigned addContact(ParticleContact *contact,
+                                        unsigned limit) const;
+    }; // class ParticleCable
+
+    /**
     * Rods link a pair of particles, generating a contact if they
     * stray too far apart or too close.
     */
     class ParticleRod : public ParticleLink {
         public:
-            /**
-            * Holds the length of the rod.
-            */
+            // Holds the length of the rod.
             real length;
 
         public:

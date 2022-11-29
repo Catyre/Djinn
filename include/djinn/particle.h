@@ -60,6 +60,8 @@ namespace djinn{
 
             real getMass() const;
 
+            real getInverseMass() const;
+
             void setPosition(const Vec3& pos);
 
             void setPosition(const real x, const real y, const real z);
