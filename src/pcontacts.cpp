@@ -78,8 +78,6 @@ void ParticleContact::resolveInterpenetration(real duration) {
     // If we don't have any penetration, skip this step
     if (penetration <= 0) return;
 
-    
-
     // The movement of each object is based on their inverse mass, so
     // total that.
     real totalInverseMass = particles[0]->getInverseMass();
@@ -106,6 +104,10 @@ void ParticleContact::resolveInterpenetration(real duration) {
         particles[1]->setPosition(particles[1]->getPosition() + particleMovement[1]);
     }
 } // void ParticleContact::resolveInterpenetration
+
+ParticleContactResolver::ParticleContactResolver(unsigned iterations) : iterations(iterations)
+{
+}
 
 void ParticleContactResolver::setIterations(unsigned iterations) {
     ParticleContactResolver::iterations = iterations;

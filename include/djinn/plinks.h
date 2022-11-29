@@ -2,7 +2,6 @@
  * @file plinks.h
  * @brief Header file for the particle links .cpp, which handles collisions between linked particles
  * @author Catyre
- * @date 11-29-2022
 */
 
 #ifndef PLINKS_H

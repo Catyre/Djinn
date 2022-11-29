@@ -2,7 +2,6 @@
  * @file plinks.cpp
  * @brief Simulate the orbit of the inner planets and jupiter around the sun
  * @author Catyre
- * @date 11-29-2022
 */
 
 #include "djinn/plinks.h"
@@ -23,6 +22,7 @@ unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) con
     if (length < maxLength) {
         return 0;
     }
+
     // Otherwise, return the contact.
     contact->particles[0] = particles[0];
     contact->particles[1] = particles[1];
@@ -41,10 +41,12 @@ unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) con
 unsigned ParticleRod::addContact(ParticleContact *contact, unsigned limit) const {
     // Find the length of the rod.
     real currentLen = currentLength();
+
     // Check if we’re overextended.
     if (currentLen == length) {
         return 0;
     }
+
     // Otherwise, return the contact.
     contact->particles[0] = particles[0];
     contact->particles[1] = particles[1];
