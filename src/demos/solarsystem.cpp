@@ -1,6 +1,6 @@
 /**
  * @file solarsystem.cpp
- * @brief Simulate the orbit of the inner planets around the sun
+ * @brief Simulate the orbit of the inner planets and jupiter around the sun
  * @author Catyre
  * @date 11-10-2022
 */
@@ -169,6 +169,15 @@ int main() {
 
                 DrawGrid(3000, 100.0f);        // Draw a grid
 
+                DrawSphere(rl_sol_x, SOLARRADIUS/EARTHRADIUS, YELLOW); // Draw Sol
+                DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, SOLARRADIUS/EARTHRADIUS + 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
+
+                DrawSphere(rl_mercury_x, MERCRADIUS/EARTHRADIUS, ORANGE); // Draw mercury
+                DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, MERCRADIUS/EARTHRADIUS + 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
+
+                DrawSphere(rl_venus_x, VENUSRADIUS/EARTHRADIUS, BEIGE); // Draw venus
+                DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, VENUSRADIUS/EARTHRADIUS + 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
+
                 DrawSphere(rl_earth_x, 1, BLUE); // Draw earth
                 DrawText3D(GetFontDefault(), earth->getName().c_str(), (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
 
@@ -177,16 +186,7 @@ int main() {
 
                 DrawSphere(rl_mars_x, MARSRADIUS/EARTHRADIUS , RED); // Draw mars
                 DrawText3D(GetFontDefault(), mars->getName().c_str(), (Vector3){rl_mars_x.x, MARSRADIUS/EARTHRADIUS + 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
-
-                DrawSphere(rl_venus_x, VENUSRADIUS/EARTHRADIUS, BEIGE); // Draw venus
-                DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, VENUSRADIUS/EARTHRADIUS + 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
-
-                DrawSphere(rl_mercury_x, MERCRADIUS/EARTHRADIUS, ORANGE); // Draw mercury
-                DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, MERCRADIUS/EARTHRADIUS + 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
-
-                DrawSphere(rl_sol_x, SOLARRADIUS/EARTHRADIUS, YELLOW); // Draw Sol
-                DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, SOLARRADIUS/EARTHRADIUS + 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
-
+                
                 DrawSphere(rl_jupiter_x, JUPITERRADIUS/EARTHRADIUS, BROWN); // Draw Jupiter
                 DrawText3D(GetFontDefault(), jupiter->getName().c_str(), (Vector3){rl_jupiter_x.x, JUPITERRADIUS/EARTHRADIUS + 2, rl_jupiter_x.z}, 10, 1, 1, true, WHITE); // Label Jupiter
 
