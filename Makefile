@@ -1,20 +1,46 @@
-CC = g++
-CFLAGS = -g -std=c++11 -lfmt -I ./include
+IDIR =./include
+CXX=g++
+CXXFLAGS=-I$(IDIR) -g -std=c++11
 RLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 
-lunarorbit : src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
-	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/lunarorbit src/demos/lunarorbit.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
+ODIR=obj
+LDIR =../lib
 
-solarsystem : src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
-	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/solarsystem src/demos/solarsystem.cpp src/particle.cpp src/pfgen.cpp src/rlFPCamera.cpp src/rlHelper.cpp
+SRC = src
+DEMOS = $(SRC)/demos
 
-springmass : src/demos/springmass.cpp src/particle.cpp src/pfgen.cpp
-	$(CC) $(CFLAGS) -o src/demos/springmass src/demos/springmass.cpp src/particle.cpp src/pfgen.cpp
+LIBS=-lfmt
 
-bounceyball : src/demos/bounceyball.cpp src/pcontacts.cpp src/plinks.cpp src/particle.cpp src/rlFPCamera.cpp src/rlHelper.cpp
-	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/bounceyball src/demos/bounceyball.cpp src/pcontacts.cpp src/plinks.cpp src/particle.cpp
+# Expand given header and object files to paths 
+_DEPS = rlFPCamera.h rlHelper.h djinn/core.h djinn/particle.h djinn/pcontacts.h djinn/pfgen.h djinn/plinks.h djinn/precision.h
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-MCVE : src/demos/MCVE.cpp src/rlFPCamera.cpp
-	$(CC) $(CFLAGS) $(RLFLAGS) -o src/demos/MCVE src/demos/MCVE.cpp src/rlFPCamera.cpp
+_OBJ = particle.o pcontacts.o pfgen.o plinks.o rlFPCamera.o rlHelper.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
+# Link object files to corresponding .cpp files (do it for the demos too)
+# $@ is the target, $^ is the dependencies, $< is the first dependency
+$(ODIR)/%.o : $(SRC)/%.cpp $(DEPS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
+$(ODIR)/%.o : $(DEMOS)/%.cpp $(DEPS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
+
+# Make rules for the demos
+bouncyball : $(OBJ) $(DEMOS)/bouncyball.o
+	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+
+lunarorbit : $(OBJ) $(DEMOS)/lunarorbit.o
+	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+
+solarsystem : $(OBJ) $(DEMOS)/solarsystem.o
+	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+
+springmass : $(OBJ) $(DEMOS)/springmass.o
+	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+
+# Clean up the object files
+.PHONY: clean
+
+clean:
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
