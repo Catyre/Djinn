@@ -55,7 +55,7 @@ public:
     Ray GetViewRay() const;
     Ray GetMouseRay(Vector2 mouse) const;
     Vector3 GetForwardVector() const;
-    Vector3 GetFowardGroundVector() const;
+    Vector3 GetForwardGroundVector() const;
 
     inline Vector2 GetViewAngles() const { return Vector2Scale(Angle, 1.0f / DEG2RAD); }
 

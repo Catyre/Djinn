@@ -31,7 +31,7 @@ int main() {
 
     ParticleForceRegistry registry;
     ParticleAnchoredSpring* spring = new ParticleAnchoredSpring(&springAnchor, springConstant, restLength, elasticLimit);
-    ParticleGravity* gravity = new ParticleGravity(Vec3(0, -9.81, 0));
+    ParticleEarthGravity* gravity = new ParticleEarthGravity(Vec3(0, -9.81, 0));
 
     registry.add(p1, spring);
     registry.add(p1, gravity);

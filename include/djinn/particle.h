@@ -37,7 +37,7 @@ namespace djinn{
             Vec3 netForce;
 
         public:
-            Particle() : pos(0, 0, 0), vel(0, 0, 0), acc(0, 0, 0), damping((real)1.0), inverseMass(0), name("") {};
+            Particle() : pos(Vec3(0, 0, 0)), vel(Vec3(0, 0, 0)), acc(Vec3(0, 0, 0)), damping((real)1.0), inverseMass(0), name("") {};
 
             Particle(const Vec3 pos, 
                      const Vec3 vel, 

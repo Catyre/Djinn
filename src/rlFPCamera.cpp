@@ -36,9 +36,8 @@
 
 #include <cmath>
 
-rlFPCamera::rlFPCamera() : ControlsKeys{ 'W', 'S', 'D', 'A', KEY_SPACE, KEY_LEFT_SHIFT, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_LEFT_SHIFT }
+rlFPCamera::rlFPCamera() : ControlsKeys{ 'W', 'S', 'D', 'A', KEY_SPACE, KEY_LEFT_SHIFT, KEY_RIGHT, KEY_LEFT, KEY_DOWN, KEY_UP, KEY_LEFT_SHIFT }
 {
-
 }
 
 void rlFPCamera::Setup(float fovY, Vector3&& position)
@@ -46,7 +45,8 @@ void rlFPCamera::Setup(float fovY, Vector3&& position)
     CameraPosition = position;
     ViewCamera.position = { position.x, position.y, position.z };
     ViewCamera.position.y += PlayerEyesPosition;
-    ViewCamera.target = Vector3Add(ViewCamera.position, Vector3{ 0, 0, 1 });
+    //ViewCamera.target = Vector3Add(ViewCamera.position, Vector3{ 0, 0, 1 });
+    ViewCamera.target = Vector3{0, 0, 0};
     ViewCamera.up = { 0.0f, 1.0f, 0.0f };
     ViewCamera.fovy = fovY;
     ViewCamera.projection = CAMERA_PERSPECTIVE;
@@ -155,7 +155,7 @@ Vector3 rlFPCamera::GetForwardVector() const
     return Vector3Normalize(Vector3Subtract(ViewCamera.target, ViewCamera.position));
 }
 
-Vector3 rlFPCamera::GetFowardGroundVector() const
+Vector3 rlFPCamera::GetForwardGroundVector() const
 {
     Vector3 forward = Vector3Subtract(ViewCamera.target, ViewCamera.position);
     forward.y = 0;
