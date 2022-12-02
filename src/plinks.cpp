@@ -1,6 +1,7 @@
 /**
  * @file plinks.cpp
- * @brief Simulate the orbit of the inner planets and jupiter around the sun
+ * @brief Define methods for creating contacts between particles that link them together 
+ *          (rods, links, cords, etc.)
  * @author Catyre
 */
 
