@@ -1,8 +1,8 @@
 # Detect OS
 ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
-detected_OS := Windows
+detected_OS:=Windows
 else
-detected_OS := $(shell uname)  # same as "uname -s".  Can be Linux, Darwin (Mac OSX), etc...
+detected_OS:=$(shell uname)  # same as "uname -s".  Can be Linux, Darwin (Mac OSX), etc...
 endif
 
 IDIR =./include
@@ -10,7 +10,7 @@ CXX=g++
 CXXFLAGS=-I$(IDIR) -g -std=c++11
 
 ODIR=obj
-LDIR =-L~/raylib/src
+LDIR =-L/home/pi/raylib/src -L/opt/vc/lib
 
 SRC = src
 DEMODIR = $(SRC)/demos
@@ -21,10 +21,12 @@ _DEMOS := $(wildcard $(DEMODIR)/*.cpp)
 DEMOS = $(basename $(notdir $(_DEMOS)))
 
 # Decide what library flags to use based on the current operating system
-ifeq "Linux" "Linux"
-LIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+ifeq (Linux,Linux)
+# Tested on an RPi 4
+#CXXFLAGS += -DPLATFORM_RPI
+LIBS =  -lraylib -lGLESv2 -lEGL -lX11 -lpthread -lrt -lm -lbcm_host -ldl -ldrm -lgbm
 endif
-ifeq ($(detected_OS),"Darwin")
+ifeq ($(detected_OS),Darwin)
 LIBS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 endif
 
@@ -45,11 +47,7 @@ $(ODIR)/%.o : $(DEMODIR)/%.cpp $(DEPS)
 
 # Resolve the exact compiler invocation to use dependent on OS (does not include Windows yet).
 # The $@ and $^ are valid here because "=" is a recursive call
-CMD=$(CXX) -o $(DEMODIR)/$@ $^ $(CXXFLAGS) $(LIBS)
-
-# For some godforsaken reason, the above if-block is necessary.  If you try simply:
-# CMD = $(CXX) -o $(DEMODIR)/$@ $^ $(CXXFLAGS) $(LIBS)
-# then g++ does not know how to link Djinn with the demo.  I have no idea why.
+CMD=$(CXX) $(LDIR) -o $(DEMODIR)/$@ $^ $(CXXFLAGS) $(LIBS)
 
 # make all
 all : $(DEMOS)

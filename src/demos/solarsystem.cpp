@@ -79,7 +79,7 @@ int main() {
 	cam.MoveSpeed.x = 200;
     cam.MoveSpeed.y = 200;
 
-    SetTargetFPS(60);                           // Set our game to run at 60 frames-per-second
+    SetTargetFPS(59);                           // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Initial conditions are at the rightmost point of the orbit (looking down on the system), 
