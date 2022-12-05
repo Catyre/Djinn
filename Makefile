@@ -1,15 +1,15 @@
 IDIR =./include
 CXX=g++
 CXXFLAGS=-I$(IDIR) -g -std=c++11
-RLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
+OSXRLFLAGS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 
 ODIR=obj
-LDIR =../lib
+LDIR =-L~/raylib/src
 
 SRC = src
 DEMOS = $(SRC)/demos
 
-LIBS=-lfmt
+LIBS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 # Expand given header and object files to paths 
 _DEPS = rlFPCamera.h rlHelper.h djinn/core.h djinn/particle.h djinn/pcontacts.h djinn/pfgen.h djinn/plinks.h djinn/precision.h
@@ -28,16 +28,18 @@ $(ODIR)/%.o : $(DEMOS)/%.cpp $(DEPS)
 
 # Make rules for the demos
 bouncyball : $(OBJ) $(DEMOS)/bouncyball.o
-	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+#	$(CXX) -o $(DEMOS)/$@ $^ $(CXXFLAGS) $(OSXRLFLAGS) $(LIBS)
+#	Windows command:
+	$(CXX) -o $(DEMOS)/$@ $^ $(CXXFLAGS) $(LIBS)
 
 lunarorbit : $(OBJ) $(DEMOS)/lunarorbit.o
-	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+	$(CXX) -o $(DEMOS)/$@ $^ $(CXXFLAGS) $(OSXRLFLAGS) $(LIBS)
 
 solarsystem : $(OBJ) $(DEMOS)/solarsystem.o
-	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+	$(CXX) -o $(DEMOS)/$@ $^ $(CXXFLAGS) $(OSXRLFLAGS) $(LIBS)
 
 springmass : $(OBJ) $(DEMOS)/springmass.o
-	$(CXX) -o $(ODIR)/$@ $^ $(CXXFLAGS) $(RLFLAGS) $(LIBS)
+	$(CXX) -o $(DEMOS)/$@ $^ $(CXXFLAGS) $(OSXRLFLAGS) $(LIBS)
 
 # Clean up the object files
 .PHONY: clean
