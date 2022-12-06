@@ -18,30 +18,27 @@
 #define MAX_ITERATIONS 100
 #define BALLRADIUS 1
 
-using namespace djinn;
-using namespace std;
-
 // Define a plane (the ground [y = 0])
-class Floor : public ParticleContactGenerator {
+class Floor : public djinn::ParticleContactGenerator {
     public:
-        Vec3 start;
-        Vec3 end;
+        djinn::Vec3 start;
+        djinn::Vec3 end;
 
         // Holds a pointer to the particles we're checking for collisions with
-        Particle *particles;
+        djinn::Particle *particles;
 
-        virtual unsigned addContact(ParticleContact *contact, unsigned limit) const;
+        virtual unsigned addContact(djinn::ParticleContact *contact, unsigned limit) const;
 
-        Floor(Vec3 start, Vec3 end, Particle *particles) : start(start), end(end), particles(particles) {};
+        Floor(djinn::Vec3 start, djinn::Vec3 end, djinn::Particle *particles) : start(start), end(end), particles(particles) {};
 };
 
-unsigned Floor::addContact(ParticleContact *contact, unsigned limit) const {
-    Vec3 ball_bottom = particles->getPosition() - Vec3(0, BALLRADIUS, 0);
+unsigned Floor::addContact(djinn::ParticleContact *contact, unsigned limit) const {
+    djinn::Vec3 ball_bottom = particles->getPosition() - djinn::Vec3(0, BALLRADIUS, 0);
     // Check if the particle is below the floor
     if (ball_bottom.y < 0) {
         // If so, generate a contact
         contact->particles[0] = particles;
-        contact->contactNormal = Vec3(0, 1, 0); // Already a unit vector, but normally you would normalize this vector
+        contact->contactNormal = djinn::Vec3(0, 1, 0); // Already a unit vector, but normally you would normalize this vector
         contact->penetration = -ball_bottom.y;
         contact->restitution = 0.9f;
 
@@ -57,7 +54,7 @@ int main() {
         auto logger = spdlog::basic_logger_mt("bouncyball", "logs/bouncyball.log", true);
         spdlog::set_default_logger(logger);
     } catch (const spdlog::spdlog_ex& ex) {
-        cout << "Log init failed: " << ex.what() << endl;
+        std::cout << "Log init failed: " << ex.what() << std::endl;
         return 0;
     }
 
@@ -80,28 +77,28 @@ int main() {
     //--------------------------------------------------------------------------------------
 
     // Define a ball
-    Vec3 ball_xi = Vec3(0, 100, 0); // [m]
-    Vec3 ball_vi = Vec3(0, 0, 0); // [m/s]
-    Vec3 ball_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 ball_xi = djinn::Vec3(0, 100, 0); // [m]
+    djinn::Vec3 ball_vi = djinn::Vec3(0, 0, 0); // [m/s]
+    djinn::Vec3 ball_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    real ballMass = 10; // [kg]
+    djinn::real ballMass = 10; // [kg]
 
-    Particle *ball = new Particle(ball_xi, ball_vi, ball_ai, 1, 1/ballMass, "Ball");
+    djinn::Particle *ball = new djinn::Particle(ball_xi, ball_vi, ball_ai, 1, 1/ballMass, "Ball");
 
     // Time resolution
-    real dt = 5e-2; // [s]
+    djinn::real dt = 5e-2; // [s]
 
     // Define force generator (ParticleEarthGravity)
-    ParticleEarthGravity gravity = ParticleEarthGravity(Vec3(0, -9.81, 0));
+    djinn::ParticleEarthGravity gravity = djinn::ParticleEarthGravity(djinn::Vec3(0, -9.81, 0));
 
     // Define force registry and add to it
-    ParticleForceRegistry registry;
+    djinn::ParticleForceRegistry registry;
     registry.add(ball, &gravity);
 
     // Define a contact generator
-    Floor *floorContact = new Floor(Vec3(1, 0, 1), Vec3(-1, 0, -1), ball);
+    Floor *floorContact = new Floor(djinn::Vec3(1, 0, 1), djinn::Vec3(-1, 0, -1), ball);
 
-    ParticleContact *contact = new ParticleContact();
+    djinn::ParticleContact *contact = new djinn::ParticleContact();
 
     unsigned iterationUsed = 0;
     while(!WindowShouldClose()) {
@@ -119,7 +116,7 @@ int main() {
         unsigned usedContacts = floorContact->addContact(contact, 1);
 
         // Resolve contacts
-        ParticleContactResolver resolver(MAX_ITERATIONS);
+        djinn::ParticleContactResolver resolver(MAX_ITERATIONS);
         resolver.resolveContacts(contact, usedContacts, dt);
 
         // Draw

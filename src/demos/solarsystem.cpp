@@ -52,7 +52,6 @@
 #define JUPITERSPEED 1.31e4 // [m/s] (Relative to Sun)
 #define JUPITERRADIUS 6.9911e7 // [m]
 
-using namespace djinn;
 using namespace std;
 
 int main() {
@@ -84,47 +83,47 @@ int main() {
 
     // Initial conditions are at the rightmost point of the orbit (looking down on the system), 
     //   where the position is only in x and the velocity is only in z
-    Vec3 moon_xi = Vec3(MOONORBIT + EARTHORBIT, 0, 0); // [m]
-    Vec3 moon_vi = Vec3(0, 0, MOONSPEED + EARTHSPEED); // [m/s]
-    Vec3 moon_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 moon_xi = djinn::Vec3(MOONORBIT + EARTHORBIT, 0, 0); // [m]
+    djinn::Vec3 moon_vi = djinn::Vec3(0, 0, MOONSPEED + EARTHSPEED); // [m/s]
+    djinn::Vec3 moon_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 earth_xi = Vec3(EARTHORBIT, 0, 0); // [m]
-    Vec3 earth_vi = Vec3(0, 0, EARTHSPEED); // [m/s]
-    Vec3 earth_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 earth_xi = djinn::Vec3(EARTHORBIT, 0, 0); // [m]
+    djinn::Vec3 earth_vi = djinn::Vec3(0, 0, EARTHSPEED); // [m/s]
+    djinn::Vec3 earth_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 mars_xi = Vec3(MARSORBIT, 0, 0); // [m]
-    Vec3 mars_vi = Vec3(0, 0, MARSSPEED); // [m/s]
-    Vec3 mars_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 mars_xi = djinn::Vec3(MARSORBIT, 0, 0); // [m]
+    djinn::Vec3 mars_vi = djinn::Vec3(0, 0, MARSSPEED); // [m/s]
+    djinn::Vec3 mars_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 venus_xi = Vec3(VENUSORBIT, 0, 0); // [m]
-    Vec3 venus_vi = Vec3(0, 0, VENUSSPEED); // [m/s]
-    Vec3 venus_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 venus_xi = djinn::Vec3(VENUSORBIT, 0, 0); // [m]
+    djinn::Vec3 venus_vi = djinn::Vec3(0, 0, VENUSSPEED); // [m/s]
+    djinn::Vec3 venus_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 mercury_xi = Vec3(MERCORBIT, 0, 0); // [m]
-    Vec3 mercury_vi = Vec3(0, 0, MERCSPEED); // [m/s]
-    Vec3 mercury_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 mercury_xi = djinn::Vec3(MERCORBIT, 0, 0); // [m]
+    djinn::Vec3 mercury_vi = djinn::Vec3(0, 0, MERCSPEED); // [m/s]
+    djinn::Vec3 mercury_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 jupiter_xi = Vec3(JUPITERORBIT, 0, 0); // [m]
-    Vec3 jupiter_vi = Vec3(0, 0, JUPITERSPEED); // [m/s]
-    Vec3 jupiter_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 jupiter_xi = djinn::Vec3(JUPITERORBIT, 0, 0); // [m]
+    djinn::Vec3 jupiter_vi = djinn::Vec3(0, 0, JUPITERSPEED); // [m/s]
+    djinn::Vec3 jupiter_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Particle *sol = new Particle(Vec3(), Vec3(), Vec3(), 1, 1/SOLARMASS, "Sol");
-    Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
-    Particle *moon = new Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
-    Particle *mars = new Particle(mars_xi, mars_vi, mars_ai, 1, 1/MARSMASS, "Mars");
-    Particle *venus = new Particle(venus_xi, venus_vi, venus_ai, 1, 1/VENUSMASS, "Venus");
-    Particle *mercury = new Particle(mercury_xi, mercury_vi, mercury_ai, 1, 1/MERCMASS, "Mercury");
-    Particle *jupiter = new Particle(jupiter_xi, jupiter_vi, jupiter_ai, 1, 1/JUPITERMASS, "Jupiter");
+    djinn::Particle *sol = new djinn::Particle(djinn::Vec3(), djinn::Vec3(), djinn::Vec3(), 1, 1/SOLARMASS, "Sol");
+    djinn::Particle *earth = new djinn::Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
+    djinn::Particle *moon = new djinn::Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
+    djinn::Particle *mars = new djinn::Particle(mars_xi, mars_vi, mars_ai, 1, 1/MARSMASS, "Mars");
+    djinn::Particle *venus = new djinn::Particle(venus_xi, venus_vi, venus_ai, 1, 1/VENUSMASS, "Venus");
+    djinn::Particle *mercury = new djinn::Particle(mercury_xi, mercury_vi, mercury_ai, 1, 1/MERCMASS, "Mercury");
+    djinn::Particle *jupiter = new djinn::Particle(jupiter_xi, jupiter_vi, jupiter_ai, 1, 1/JUPITERMASS, "Jupiter");
 
-    real scale = 2.5e-9;
+    djinn::real scale = 2.5e-9;
 
     // Time resolution
-    real dt = 1e3; // [s]
+    djinn::real dt = 1e3; // [s]
 
     // Define force registry
-    ParticleUniversalForceRegistry gravityRegistry;
+    djinn::ParticleUniversalForceRegistry gravityRegistry;
 
-    vector<Particle*> particles = {sol, mercury, venus, earth, moon, mars, jupiter};
+    vector<djinn::Particle*> particles = {sol, mercury, venus, earth, moon, mars, jupiter};
 
     gravityRegistry.add(particles);
 
@@ -133,7 +132,7 @@ int main() {
         // Increment frame counter
         frame += 1;
 
-        // Apply gravity to each particle
+        // Apply gravity to each djinn::Particle
         gravityRegistry.applyGravity();
 
         // Log the data
@@ -141,17 +140,17 @@ int main() {
         spdlog::info("Frame: {}", frame);
         
         for (auto p : particles) {
-            spdlog::info("Particle: {}", p->getName());
+            spdlog::info("djinn::Particle: {}", p->getName());
             spdlog::info("Position: {}", p->getPosition().toString());
             spdlog::info("Velocity: {}", p->getVelocity().toString());
             spdlog::info("Acceleration: {}", p->getAcceleration().toString());
             spdlog::info("----------------------------------------------------------------------------------------------------------------------------");
         }
 
-        // Update the positions of each particle
+        // Update the positions of each djinn::Particle
         gravityRegistry.integrateAll(dt);
 
-        // Convert my Vec3 object to a Raylib Vector3 object and scale down to tens of meters
+        // Convert my djinn::Vec3 object to a Raylib Vector3 object and scale down to tens of meters
         Vector3 rl_earth_x = (earth->getPosition() * scale).toVector3();
         Vector3 rl_moon_x = (moon->getPosition() * scale).toVector3();
         Vector3 rl_mars_x = (mars->getPosition() * scale).toVector3();
@@ -170,25 +169,25 @@ int main() {
                 DrawGrid(3000, 100.0f);        // Draw a grid
 
                 DrawSphere(rl_sol_x, SOLARRADIUS/EARTHRADIUS, YELLOW); // Draw Sol
-                DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, SOLARRADIUS/EARTHRADIUS + 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
+                djinn::DrawText3D(GetFontDefault(), sol->getName().c_str(), (Vector3){rl_sol_x.x, SOLARRADIUS/EARTHRADIUS + 2, rl_sol_x.z}, 10, 1, 1, true, WHITE); // Label Sol
 
                 DrawSphere(rl_mercury_x, MERCRADIUS/EARTHRADIUS, ORANGE); // Draw mercury
-                DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, MERCRADIUS/EARTHRADIUS + 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
+                djinn::DrawText3D(GetFontDefault(), mercury->getName().c_str(), (Vector3){rl_mercury_x.x, MERCRADIUS/EARTHRADIUS + 2, rl_mercury_x.z}, 10, 1, 1, true, WHITE); // Label Mercury
 
                 DrawSphere(rl_venus_x, VENUSRADIUS/EARTHRADIUS, BEIGE); // Draw venus
-                DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, VENUSRADIUS/EARTHRADIUS + 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
+                djinn::DrawText3D(GetFontDefault(), venus->getName().c_str(), (Vector3){rl_venus_x.x, VENUSRADIUS/EARTHRADIUS + 2, rl_venus_x.z}, 10, 1, 1, true, WHITE); // Label Venus
 
                 DrawSphere(rl_earth_x, 1, BLUE); // Draw earth
-                DrawText3D(GetFontDefault(), earth->getName().c_str(), (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
+                djinn::DrawText3D(GetFontDefault(), earth->getName().c_str(), (Vector3){rl_earth_x.x, 2, rl_earth_x.z}, 10, 1, 1, true, WHITE); // Label Earth
 
                 DrawSphere(rl_moon_x, MOONRADIUS/EARTHRADIUS, GRAY); // Draw moon
-                DrawText3D(GetFontDefault(), moon->getName().c_str(), (Vector3){rl_moon_x.x, 4, rl_moon_x.z}, 10, 1, 1, true, WHITE); // Label Moon
+                djinn::DrawText3D(GetFontDefault(), moon->getName().c_str(), (Vector3){rl_moon_x.x, 4, rl_moon_x.z}, 10, 1, 1, true, WHITE); // Label Moon
 
                 DrawSphere(rl_mars_x, MARSRADIUS/EARTHRADIUS , RED); // Draw mars
-                DrawText3D(GetFontDefault(), mars->getName().c_str(), (Vector3){rl_mars_x.x, MARSRADIUS/EARTHRADIUS + 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
+                djinn::DrawText3D(GetFontDefault(), mars->getName().c_str(), (Vector3){rl_mars_x.x, MARSRADIUS/EARTHRADIUS + 2, rl_mars_x.z}, 10, 1, 1, true, WHITE); // Label Mars
                 
                 DrawSphere(rl_jupiter_x, JUPITERRADIUS/EARTHRADIUS, BROWN); // Draw Jupiter
-                DrawText3D(GetFontDefault(), jupiter->getName().c_str(), (Vector3){rl_jupiter_x.x, JUPITERRADIUS/EARTHRADIUS + 2, rl_jupiter_x.z}, 10, 1, 1, true, WHITE); // Label Jupiter
+                djinn::DrawText3D(GetFontDefault(), jupiter->getName().c_str(), (Vector3){rl_jupiter_x.x, JUPITERRADIUS/EARTHRADIUS + 2, rl_jupiter_x.z}, 10, 1, 1, true, WHITE); // Label Jupiter
 
             cam.EndMode3D();
 

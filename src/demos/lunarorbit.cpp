@@ -23,16 +23,13 @@
 #define EARTHMASS 5.97219e24 // [kg]
 #define EARTHRADIUS 6.371e6 // [m]
 
-using namespace djinn;
-using namespace std;
-
 int main() {
     // Set up logging
     try {
         auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log", true);
         spdlog::set_default_logger(logger);
     } catch (const spdlog::spdlog_ex& ex) {
-        cout << "Log init failed: " << ex.what() << endl;
+        std::cout << "Log init failed: " << ex.what() << std::endl;
         return 0;
     }
 
@@ -55,22 +52,22 @@ int main() {
 
     // Initial conditions are at the rightmost point of the orbit (looking down on the system), 
     //   where the position is only in x and the velocity is only in z
-    Vec3 moon_xi = Vec3(MOONORBIT, 0, 0); // [m]
-    Vec3 moon_vi = Vec3(0, 0, MOONSPEED); // [m/s]
-    Vec3 moon_ai = Vec3(0, 0, 0); // [m/s^2]
+    djinn::Vec3 moon_xi = djinn::Vec3(MOONORBIT, 0, 0); // [m]
+    djinn::Vec3 moon_vi = djinn::Vec3(0, 0, MOONSPEED); // [m/s]
+    djinn::Vec3 moon_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
-    Vec3 earth_xi = Vec3(0, 0, 0);
-    Vec3 earth_vi = Vec3(0, 0, 0);
-    Vec3 earth_ai = Vec3(0, 0, 0);
+    djinn::Vec3 earth_xi = djinn::Vec3(0, 0, 0);
+    djinn::Vec3 earth_vi = djinn::Vec3(0, 0, 0);
+    djinn::Vec3 earth_ai = djinn::Vec3(0, 0, 0);
 
-    Particle *moon = new Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
-    Particle *earth = new Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
+    djinn::Particle *moon = new djinn::Particle(moon_xi, moon_vi, moon_ai, 1, 1/MOONMASS, "Moon");
+    djinn::Particle *earth = new djinn::Particle(earth_xi, earth_vi, earth_ai, 1, 1/EARTHMASS, "Earth");
 
     // Time resolution
-    real dt = 1e3; // [s]
+    djinn::real dt = 1e3; // [s]
 
     // Define force registry
-    ParticleUniversalForceRegistry gravityRegistry;
+    djinn::ParticleUniversalForceRegistry gravityRegistry;
 
     // Register force generators with the particle
     gravityRegistry.add(moon);
@@ -105,8 +102,8 @@ int main() {
         // Alternatively:
         //gravityRegistry.integrateAll(dt);
 
-        Vec3 moon_x = moon->getPosition() * 1e-7;
-        Vec3 earth_x = earth->getPosition() * 1e-7; // Scale down to hundreds of km
+        djinn::Vec3 moon_x = moon->getPosition() * 1e-7;
+        djinn::Vec3 earth_x = earth->getPosition() * 1e-7; // Scale down to hundreds of km
 
         Vector3 rl_moon_x = moon_x.toVector3();
         Vector3 rl_earth_x = earth_x.toVector3();
@@ -121,10 +118,10 @@ int main() {
 
                 DrawGrid(100, 1.0f);        // Draw a grid
                 DrawSphere(rl_moon_x, 1, WHITE);
-                DrawText3D(GetFontDefault(), moon->getName().c_str(), Vec3(moon_x.x, 6, moon_x.z).toVector3(), 10, 1, 1, true, WHITE);
+                djinn::DrawText3D(GetFontDefault(), moon->getName().c_str(), djinn::Vec3(moon_x.x, 6, moon_x.z).toVector3(), 10, 1, 1, true, WHITE);
 
                 DrawSphere(rl_earth_x, EARTHRADIUS/MOONRADIUS, BLUE);
-                DrawText3D(GetFontDefault(), earth->getName().c_str(), Vec3(earth_x.x, 6, earth_x.z).toVector3(), 10, 1, 1, true, WHITE);
+                djinn::DrawText3D(GetFontDefault(), earth->getName().c_str(), djinn::Vec3(earth_x.x, 6, earth_x.z).toVector3(), 10, 1, 1, true, WHITE);
 
             cam.EndMode3D();
 

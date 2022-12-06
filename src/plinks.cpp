@@ -1,23 +1,21 @@
 /**
  * @file plinks.cpp
- * @brief Define methods for creating contacts between particles that link them together 
+ * @brief Define methods for creating contacts between djinn::Particles that link them together 
  *          (rods, links, cords, etc.)
  * @author Catyre
 */
 
 #include "djinn/plinks.h"
 
-using namespace djinn;
-
-real ParticleLink::currentLength() const {
-    Vec3 relativePos = particles[0]->getPosition() -
+djinn::real djinn::ParticleLink::currentLength() const {
+    djinn::Vec3 relativePos = particles[0]->getPosition() -
     particles[1]->getPosition();
     return relativePos.magnitude();
 }
 
-unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) const {
+unsigned djinn::ParticleCable::addContact(djinn::ParticleContact *contact, unsigned limit) const {
     // Find the length of the cable.
-    real length = currentLength();
+    djinn::real length = currentLength();
 
     // Check if we’re overextended.
     if (length < maxLength) {
@@ -29,7 +27,7 @@ unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) con
     contact->particles[1] = particles[1];
 
     // Calculate the normal.
-    Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
+    djinn::Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
     normal.normalize();
 
     contact->contactNormal = normal;
@@ -39,9 +37,9 @@ unsigned ParticleCable::addContact(ParticleContact *contact, unsigned limit) con
     return 1;
 }
 
-unsigned ParticleRod::addContact(ParticleContact *contact, unsigned limit) const {
+unsigned djinn::ParticleRod::addContact(djinn::ParticleContact *contact, unsigned limit) const {
     // Find the length of the rod.
-    real currentLen = currentLength();
+    djinn::real currentLen = currentLength();
 
     // Check if we’re overextended.
     if (currentLen == length) {
@@ -53,7 +51,7 @@ unsigned ParticleRod::addContact(ParticleContact *contact, unsigned limit) const
     contact->particles[1] = particles[1];
 
     // Calculate the normal.
-    Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
+    djinn::Vec3 normal = particles[1]->getPosition() - particles[0]->getPosition();
     normal.normalize();
 
     // The contact normal depends on whether we’re extending or compressing.
