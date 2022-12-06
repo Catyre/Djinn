@@ -11,23 +11,22 @@ DEMODIR = $(SRC)/demos
 MKDIRS = $(ODIR) logs
 $(shell mkdir -p $(MKDIRS))
 
-LDIR =-L/home/pi/raylib/src -L/opt/vc/lib
+# In case we need it later
+#LDIR =-L/opt/vc/lib
 
 # Get a sequence of all demos in the ./src/demos directory and strip the filenames
 # 	of path and suffix
 _DEMOS := $(wildcard $(DEMODIR)/*.cpp)
 DEMOS = $(basename $(notdir $(_DEMOS)))
 
-# Get a sequence of all demo object files in the obj/ directory
-DEMOS_O = $(addprefix $(OBJ)/, $(addsuffix .o, $(DEMOS)))
-
 # Decide what library flags to use based on the current operating system
 ifeq ($(shell uname),Linux)
-#Tested on an RPi 4
-LIBS =  -lraylib -lGLESv2 -lEGL -lX11 -lpthread -lrt -lm -lbcm_host -ldl -ldrm -lgbm
+  #Tested on an RPi 4
+  LIBS =  -lraylib -lGLESv2 -lEGL -lX11 -lpthread -lrt -lm -ldl -ldrm -lgbm
 endif
+
 ifeq ($(shell uname),Darwin)
-LIBS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
+  LIBS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 endif
 
 # Expand given header and object files to paths 
