@@ -1,0 +1,23 @@
+# Demos
+src/demos/lunarorbit
+src/demos/solarsystem
+src/demos/bouncyball
+src/demos/springmass
+
+# Logs
+logs
+.vscode
+
+# Compiler mumbo jumbo
+src/demos/*.dSYM*
+src/*.dSYM*
+
+# Mac default files
+include/.DS_Store
+src/.DS_Store
+src/demos/.DS_Store
+.DS_Store
+
+obj
+
+dependencies.png

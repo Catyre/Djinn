@@ -1,10 +1,10 @@
 # Define recursive wildcard function
-rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+rwildcard=$(foreach d, $(wildcard $(1 := /*)), $(call rwildcard, $d, $2) $(filter $(subst *, %, $2), $d))
 
 # Define some basic macros
 IDIR =./include
-CXX=g++
-CXXFLAGS=-I$(IDIR) -g -std=c++11
+CXX = g++
+CXXFLAGS = -I$(IDIR) -g -std=c++11
 ODIR = obj
 SRC = src
 DEMODIR = $(SRC)/demos
@@ -30,7 +30,7 @@ ifeq ($(shell uname),Linux)
 endif
 
 ifeq ($(shell uname),Darwin)
-  LIBS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
+  LIBS = -lfmt -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 endif
 
 # Find all header files starting from Djinn/include
@@ -64,7 +64,7 @@ all : $(DEMOS)
 $(DEMOS) : % : $(ODIR)/%.o $(OBJ_NO_DEMOS) $(DEPS)
 	$(CMD)
 
-# Clean up the object files
+# Clean up the object files, logs, and executables
 clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(LOGS)/*.log $(addprefix $(DEMODIR)/, $(DEMOS))
 
