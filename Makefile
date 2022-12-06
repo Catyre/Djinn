@@ -1,3 +1,6 @@
+# Define recursive wildcard function
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 # Define some basic macros
 IDIR =./include
 CXX=g++
@@ -8,7 +11,8 @@ DEMODIR = $(SRC)/demos
 
 # Define directories that need to be made on the first make invocation and make those
 #	directories if they don't already exist
-MKDIRS = $(ODIR) logs
+LOGS = logs
+MKDIRS = $(ODIR) $(LOGS)
 $(shell mkdir -p $(MKDIRS))
 
 # In case we need it later
@@ -29,12 +33,17 @@ ifeq ($(shell uname),Darwin)
   LIBS = -framework IOKit -framework Cocoa -framework OpenGL `pkg-config --libs --cflags raylib`
 endif
 
-# Expand given header and object files to paths 
-_DEPS = rlFPCamera.h rlHelper.h djinn/core.h djinn/particle.h djinn/pcontacts.h djinn/pfgen.h djinn/plinks.h djinn/precision.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+# Find all header files starting from Djinn/include
+DEPS = $(call rwildcard, $(IDIR), *.h)
 
-_OBJ = particle.o pcontacts.o pfgen.o plinks.o rlFPCamera.o rlHelper.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+# Assign all .cpp files under Djinn/src/ to SRCCODE
+SRCCODE = $(shell find ./$(SRC) -type f -wholename "./**/*.cpp")
+
+# Convert those sources into object filenames
+OBJ = $(addprefix $(ODIR)/, $(notdir $(SRCCODE:%.cpp=$(ODIR)/%.o)))
+
+# Filter out the demos from the objects (else there will be multiple mains compiled)
+OBJ_NO_DEMOS = $(filter-out $(addsuffix .o, $(addprefix $(ODIR)/, $(DEMOS))), $(OBJ))
 
 # Link object files to corresponding .cpp files (do it for the demos too)
 # $@ is the target, $^ is the dependencies, $< is the first dependency
@@ -52,11 +61,11 @@ CMD = $(CXX) $(LDIR) -o $(DEMODIR)/$@ $^ $(CXXFLAGS) $(LIBS)
 all : $(DEMOS)
 
 # Make rules for the demos
-$(DEMOS) : % : $(ODIR)/%.o $(OBJ) $(DEPS)
+$(DEMOS) : % : $(ODIR)/%.o $(OBJ_NO_DEMOS) $(DEPS)
 	$(CMD)
 
 # Clean up the object files
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(LOGS)/*.log $(addprefix $(DEMODIR)/, $(DEMOS))
 
 .PHONY: clean all
