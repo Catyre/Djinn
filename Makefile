@@ -43,7 +43,6 @@ $(ODIR)/%.o : $(SRC)/%.cpp $(DEPS)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 $(ODIR)/%.o : $(DEMODIR)/%.cpp $(DEPS)
-#	@mkdir -p $(@D)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 # Resolve the exact compiler invocation to use dependent on OS (does not include Windows yet).
