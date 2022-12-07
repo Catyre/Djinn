@@ -52,15 +52,13 @@
 #define JUPITERSPEED 1.31e4 // [m/s] (Relative to Sun)
 #define JUPITERRADIUS 6.9911e7 // [m]
 
-using namespace std;
-
 int main() {
     // Set up logging
     try {
         auto logger = spdlog::basic_logger_mt("solarsystem", "logs/solarsystem.log", true);
         spdlog::set_default_logger(logger);
     } catch (const spdlog::spdlog_ex& ex) {
-        cout << "Log init failed: " << ex.what() << endl;
+        std::cout << "Log init failed: " << ex.what() << std::endl;
         return 0;
     }
 
@@ -123,7 +121,7 @@ int main() {
     // Define force registry
     djinn::ParticleUniversalForceRegistry gravityRegistry;
 
-    vector<djinn::Particle*> particles = {sol, mercury, venus, earth, moon, mars, jupiter};
+    std::vector<djinn::Particle*> particles = {sol, mercury, venus, earth, moon, mars, jupiter};
 
     gravityRegistry.add(particles);
 

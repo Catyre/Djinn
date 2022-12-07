@@ -25,8 +25,6 @@
 #include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
 
-using namespace std;
-
 void djinn::ParticleUniversalForceRegistry::add(djinn::Particle* particle) {
     ParticleUniversalForceRegistration registration;
     registration.particle = particle;
@@ -43,8 +41,8 @@ void djinn::ParticleUniversalForceRegistry::add(djinn::Particle* particle) {
     }
 }
 
-void djinn::ParticleUniversalForceRegistry::add(vector<djinn::Particle*> particles) {
-    for(vector<djinn::Particle*>::iterator particle = particles.begin(); particle != particles.end(); particle++) {
+void djinn::ParticleUniversalForceRegistry::add(std::vector<djinn::Particle*> particles) {
+    for(std::vector<djinn::Particle*>::iterator particle = particles.begin(); particle != particles.end(); particle++) {
         ParticleUniversalForceRegistration registration;
         registration.particle = *particle;
 
