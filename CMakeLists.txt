@@ -1,28 +1,27 @@
-macro(print_all_variables)
-    message(STATUS "print_all_variables------------------------------------------{")
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
-    message(STATUS "print_all_variables------------------------------------------}")
-endmacro()
-
 cmake_minimum_required(VERSION 3.25.1)
 project(Djinn VERSION 1.0
               DESCRIPTION "My attempt at a physics engine"
               LANGUAGES CXX)
 
+# Set C++ standard to C++11 (Necessary for header-only spdlog)
 set(CMAKE_CXX_STANDARD 11)
+
+# Define output directory for the executables
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
+
+# Tell CMake to output the compile_commands.json file for NeoVim
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Find raylib
 find_package(raylib REQUIRED)
 include_directories(${raylib_INCLUDE_DIR})
 link_libraries(${raylib_LIBRARY})
 
+# Find spdlog
 find_package(spdlog REQUIRED)
 include_directories(${spdlog_DIR})
 
+# Build Djinn library
 file(GLOB DJINN_LIB "${CMAKE_CURRENT_LIST_DIR}/djinn/src/*.cpp"
                     "${CMAKE_CURRENT_LIST_DIR}/djinn/include/*.h" 
                     "${CMAKE_CURRENT_LIST_DIR}/djinn/include/djinn/*.h")
@@ -30,7 +29,7 @@ include_directories(djinn/include)
 include_directories(djinn/include/djinn)
 add_library(djinn SHARED ${DJINN_LIB})
 
-# Install library
+# Install Djinn
 install(TARGETS djinn DESTINATION ${CMAKE_CURRENT_LIST_DIR}/djinn/lib/djinn)
 
 # Install library headers
@@ -48,8 +47,8 @@ foreach( testsourcefile ${PROJECT_DEMOS} )
 
     # Create the executable demo
     add_executable( ${DEMO} ${testsourcefile} ${PROJECT_SOURCES} ${djinn})
-    #set_target_properties(${DEMO} PROPERTIES ENABLE_EXPORTS 1)
-    # Make sure YourLib is linked to each app
+    
+    # Make sure Djinn + dependencies is linked to each app
     set_target_properties( ${DEMO} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} )
     target_link_libraries( ${DEMO} PRIVATE ${djinn} ${raylib_LIBRARY} spdlog::spdlog_header_only)
 endforeach( testsourcefile ${PROJECT_DEMOS} )
