@@ -34,7 +34,7 @@ file(GLOB DJINN_LIB "${DJINN_DIR}/src/*.cpp"
                     "${DJINN_DIR}/include/djinn/*.h")
 include_directories(djinn/include)
 include_directories(djinn/include/djinn)
-add_library(djinn SHARED ${DJINN_LIB})
+add_library(djinn STATIC ${DJINN_LIB})
 target_link_libraries(djinn PUBLIC raylib spdlog)
 
 
