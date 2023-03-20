@@ -1,0 +1,3 @@
+[submodule "djinn/lib/raylib/raylib"]
+	path = djinn/lib/raylib/raylib
+	url = https://github.com/raysan5/raylib
