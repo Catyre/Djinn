@@ -35,7 +35,7 @@ file(GLOB DJINN_LIB "${DJINN_DIR}/src/*.cpp"
 include_directories(djinn/include)
 include_directories(djinn/include/djinn)
 add_library(djinn SHARED ${DJINN_LIB})
-target_link_libraries(djinn PUBLIC raylib spdlog::spdlog_header_only)
+target_link_libraries(djinn PUBLIC raylib spdlog)
 
 
 # Install Djinn
@@ -61,7 +61,7 @@ foreach( testsourcefile ${PROJECT_DEMOS} )
     
     # Make sure Djinn + dependencies is linked to each app
     set_target_properties( ${DEMO} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} )
-    target_link_libraries( ${DEMO} PRIVATE djinn raylib spdlog)
+    target_link_libraries( ${DEMO} PRIVATE raylib spdlog)
 
     # Checks if OSX and links appropriate frameworks (Only required on MacOS)
     if (APPLE)
