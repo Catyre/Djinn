@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25.1)
 project(Djinn VERSION 1.0
-    DESCRIPTION "My attempt at a physics engine"
+              DESCRIPTION "My attempt at a physics engine"
               LANGUAGES CXX)
 
 # Set C++ standard to C++11 (Necessary for header-only spdlog)
@@ -22,8 +22,11 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 add_subdirectory(${raylib}/raylib)
 
 # Find spdlog
-find_package(spdlog REQUIRED)
-include_directories(${spdlog_DIR})
+set(spdlog ${DJINN_DIR}/lib/spdlog)
+include_directories(${spdlog}/include)
+add_subdirectory(${spdlog})
+#find_package(spdlog REQUIRED)
+#include_directories(${spdlog_DIR})
 
 # Build Djinn library
 file(GLOB DJINN_LIB "${DJINN_DIR}/src/*.cpp"
@@ -58,7 +61,7 @@ foreach( testsourcefile ${PROJECT_DEMOS} )
     
     # Make sure Djinn + dependencies is linked to each app
     set_target_properties( ${DEMO} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} )
-    target_link_libraries( ${DEMO} PRIVATE djinn raylib spdlog::spdlog_header_only)
+    target_link_libraries( ${DEMO} PRIVATE djinn raylib spdlog)
 
     # Checks if OSX and links appropriate frameworks (Only required on MacOS)
     if (APPLE)

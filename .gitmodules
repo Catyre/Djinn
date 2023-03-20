@@ -1,3 +1,6 @@
 [submodule "djinn/lib/raylib/raylib"]
 	path = djinn/lib/raylib/raylib
 	url = https://github.com/raysan5/raylib
+[submodule "djinn/lib/spdlog"]
+	path = djinn/lib/spdlog
+	url = https://github.com/gabime/spdlog
