@@ -36,7 +36,7 @@ void djinn::Particle::integrate(djinn::real duration) {
 
     acc.addScaledVector(netForce, inverseMass);
 
-    // Impose drag.
+    // Impose drag
     vel *= real_pow(damping, duration);
 
     // Update linear velocity from the acceleration.
