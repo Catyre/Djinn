@@ -13,8 +13,7 @@ src/.DS_Store
 src/demos/.DS_Store
 
 obj
-build
-djinn/lib 
+build 
 bin
 
 dependencies.png
