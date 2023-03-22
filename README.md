@@ -3,6 +3,12 @@ Currently, this engine is in its very very early form.  In fact, at the moment, 
 
 This repository was made as a means of quickly sharing my codebase to people so they can help me troubleshoot problems/offer help in the design of the engine.
 
+
+https://user-images.githubusercontent.com/7707850/226810901-94b4dbc5-546b-474b-8d47-bb78ae93647a.mp4
+
+This is a video demonstrating the `solarsystem` demo, which simulates the orbits of the inner planets and Jupiter.  The orbits, speeds, and relative sizes are to scale, however orbital distances are not to scale with radial distances.
+
+
 Djinn is heavily (but not entirely) based on the paradigms introduced in "Game Physics Engine Development" by Ian Millington.  His GitHub -- and the Cyclone engine upon which Djinn is based -- can be found [here](https://github.com/idmillington).
 
 Current To-do list:
