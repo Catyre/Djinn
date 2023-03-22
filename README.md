@@ -7,7 +7,7 @@ This repository was made as a means of quickly sharing my codebase to people so 
 
 https://user-images.githubusercontent.com/7707850/226810901-94b4dbc5-546b-474b-8d47-bb78ae93647a.mp4
 
-This is a video demonstrating the `solarsystem` demo, which simulates the orbits of the inner planets and Jupiter.  The orbits, speeds, and relative sizes are to scale, however orbital distances are not to scale with radial distances.
+This is a video demonstrating the `solarsystem` demo, which simulates the orbits of the inner planets and Jupiter.  The orbits, speeds, and relative sizes are to scale, however orbital distances are not to scale with the radii of the planets.
 
 There is also `bouncyball`, which is simply a ball bouncing against a flat surface, and `lunarorbit`, which is another orbit demo except just the Moon-Earth system.
 
