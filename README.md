@@ -22,6 +22,7 @@ To build Djinn, [cmake](https://cmake.org/download/) is required.
 NOTE: At the moment, Djinn's build process has only been demonstrated to work on Apple silicon and some Linux distros.  There is more to be done on my part to be able to build the demos on Windows.  
 
 After downloading and installing cmake, the full download and build process is as simple as:
+
     git clone --recurse-submodules https://github.com/Catyre/Djinn
     cd Djinn
     mkdir build && cd build
