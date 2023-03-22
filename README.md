@@ -1,6 +1,22 @@
 ## Welcome to the Djinn Engine!
-Currently, this engine is in its very very early form.  In fact, at the moment, it can only support gravitational forces, spring forces, 
-a generic "uplift" force, and some others with demos only built for gravity (solarsystem and lunarorbit).  You can run the demos by cloning the repository, compiling the code, and running the demos found in src/demos/.
+Currently, this engine is in its very very early form.  In fact, at the moment, it can only support gravitational forces, spring forces, a generic "uplift" force, and some others with demos only built for gravity (solarsystem and lunarorbit) and a brief demonstration of collisions (bouncyball).
+
+### Installing Djinn
+Djinn relies on two other libraries: [spdlog](https://github.com/gabime/spdlog) and [raylib](https://github.com/raysan5/raylib).  These dependencies are handled in the cloning process of this repository:
+
+    git clone --recurse-submodules https://github.com/Catyre/Djinn
+
+To build Djinn, [cmake](https://cmake.org/download/) is required.  
+
+NOTE: At the moment, Djinn's build process has only been demonstrated to work on Apple silicon and some Linux distros.  There is more to be done on my part to be able to build the demos on Windows.  
+
+After downloading and installing cmake, the full download and build process is as simple as:
+    git clone --recurse-submodules https://github.com/Catyre/Djinn
+    cd Djinn
+    mkdir build && cd build
+    cmake ..
+
+To run the executable demos of the engine, navigate to `Djinn/bin/` and en
 
 This repository was made as a means of quickly sharing my codebase to people so they can help me troubleshoot problems/offer help in the design of the engine.
 
@@ -10,4 +26,5 @@ Current To-do list:
 - Implement electromagnetism
 - Finish collision resolution
 - Make a graphical demo for the spring-mass system depicted in src/demos/springmass.cpp
+- Build a GUI so that simulations can be built outside of a literal program
 - Come up with more ideas for demos
