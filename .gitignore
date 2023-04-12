@@ -15,10 +15,10 @@ src/demos/.DS_Store
 obj
 build 
 bin
-djinn/lib
+djinn/lib/djinn
+validation
 
 dependencies.png
 
 .clang-format
 
-validation
