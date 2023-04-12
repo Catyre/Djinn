@@ -2,59 +2,81 @@
  * @file particle.cpp
  * @brief Define methods for the Particle class
  * @author Catyre
-*/
+ */
 
-#include <assert.h>
-#include <sstream>
-#include <limits>
 #include "djinn/particle.h"
+#include "djinn/numerical.h"
 #include "spdlog/spdlog.h"
+#include <assert.h>
+#include <limits>
+#include <sstream>
 
 std::string djinn::Particle::toString() {
     std::stringstream ss;
 
-    if(!this->name.empty()) {
+    if (!this->name.empty()) {
         ss << this->name << ": " << std::endl;
-    } 
+    }
 
-    ss << std::scientific << "Position [m]:         |<" << this->pos.x << ", " << this->pos.y << ", " << this->pos.z << ">| = " << this->pos.magnitude() << std::endl <<
-                        "Velocity [m/s]:       |<" << this->vel.x << ", " << this->vel.y << ", " << this->vel.z << ">| = " << this->vel.magnitude() << std::endl <<
-                        "Acceleration [m/s^2]: |<" << this->acc.x << ", " << this->acc.y << ", " << this->acc.z << ">| = " << this->acc.magnitude() << std::endl <<
-                        "Net force [N]:        |<" << this->netForce.x << ", " << this->netForce.y << ", " << this->netForce.z << ">| = " << this->netForce.magnitude() << std::endl <<
-                        "Kinetic Energy [J]: " << this->kineticEnergy() << std::endl;
+    ss << std::scientific << "Position [m]:         |<" << this->pos.x << ", " << this->pos.y << ", " << this->pos.z << ">| = " << this->pos.magnitude() << std::endl
+       << "Velocity [m/s]:       |<" << this->vel.x << ", " << this->vel.y << ", " << this->vel.z << ">| = " << this->vel.magnitude() << std::endl
+       << "Acceleration [m/s^2]: |<" << this->acc.x << ", " << this->acc.y << ", " << this->acc.z << ">| = " << this->acc.magnitude() << std::endl
+       << "Net force [N]:        |<" << this->netForce.x << ", " << this->netForce.y << ", " << this->netForce.z << ">| = " << this->netForce.magnitude() << std::endl
+       << "Kinetic Energy [J]: " << this->kineticEnergy() << std::endl;
 
     return ss.str();
 }
 
-void djinn::Particle::integrate(djinn::real duration) {
+void djinn::Particle::integrate(djinn::real dt) {
     // We won't integrate particles with infinite or negative mass
-    if (inverseMass <= 0.0) return;
+    if (inverseMass <= 0.0)
+        return;
 
     assert(duration > 0.0);
 
-    djinn::Vec3 pos_i = pos;
-
+    djinn::Vec3 pos0 = pos;
     acc.addScaledVector(netForce, inverseMass);
 
-    // Impose drag
-    vel *= real_pow(damping, duration);
+    djinn::verletAlgorithm(pos, vel, acc, dt);
 
-    // Update linear velocity from the acceleration.
-    vel.addScaledVector(acc, duration);
+    djinn::Vec3 delta_x = pos - pos0;
 
-    // Update linear position.
-    pos.addScaledVector(vel, duration);
-    djinn::Vec3 delta_x = pos - pos_i;
-
-    // Clear forces and acceleration
     clearAccumulator();
     acc = djinn::Vec3();
 
     spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
-} // Particle::integrate()
+}
+
+// void djinn::Particle::integrate(djinn::real duration) {
+//     // We won't integrate particles with infinite or negative mass
+//     if (inverseMass <= 0.0)
+//         return;
+//
+//     assert(duration > 0.0);
+//
+//     djinn::Vec3 pos_i = pos;
+//
+//     acc.addScaledVector(netForce, inverseMass);
+//
+//     // Impose drag
+//     vel *= real_pow(damping, duration);
+//
+//     // Update linear velocity from the acceleration.
+//     vel.addScaledVector(acc, duration);
+//
+//     // Update linear position.
+//     pos.addScaledVector(vel, duration);
+//     djinn::Vec3 delta_x = pos - pos_i;
+//
+//     // Clear forces and acceleration
+//     clearAccumulator();
+//     acc = djinn::Vec3();
+//
+//     spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
+// } // Particle::integrate()
 
 djinn::real djinn::Particle::kineticEnergy() {
-    return .5 * ((real)1.0)/inverseMass * real_pow(vel.magnitude(), 2);
+    return .5 * ((real)1.0) / inverseMass * real_pow(vel.magnitude(), 2);
 }
 
 std::string djinn::Particle::getName() const {
@@ -64,11 +86,11 @@ std::string djinn::Particle::getName() const {
 // Set the mass (specfically the inverse mass) of the particle
 void djinn::Particle::setMass(const djinn::real mass) {
     assert(mass != 0);
-    Particle::inverseMass = ((real)1.0)/mass;
+    Particle::inverseMass = ((real)1.0) / mass;
 }
 
 // Set the position of the particle to the given vector
-void djinn::Particle::setPosition(const djinn::Vec3& pos) {
+void djinn::Particle::setPosition(const djinn::Vec3 &pos) {
     Particle::pos = pos;
 }
 
@@ -84,13 +106,13 @@ djinn::Vec3 djinn::Particle::getPosition() const {
     return pos;
 }
 
-// Get the particle's velocity and set it equal to the given vector
-void djinn::Particle::getPosition(djinn::Vec3* pos) {
+// Get the particle's position and set it equal to the given vector
+void djinn::Particle::getPosition(djinn::Vec3 *pos) {
     *pos = djinn::Particle::pos;
 }
 
 // Set the velocity of the particle to the given vector
-void djinn::Particle::setVelocity(const djinn::Vec3& vel) {
+void djinn::Particle::setVelocity(const djinn::Vec3 &vel) {
     djinn::Particle::vel = vel;
 }
 
@@ -107,7 +129,7 @@ djinn::Vec3 djinn::Particle::getVelocity() const {
 }
 
 // Get the particle's velocity and set it equal to the given vector
-void djinn::Particle::getVelocity(djinn::Vec3* velocity) {
+void djinn::Particle::getVelocity(djinn::Vec3 *velocity) {
     *velocity = Particle::vel;
 }
 
@@ -128,13 +150,13 @@ djinn::Vec3 djinn::Particle::getAcceleration() const {
 
 djinn::real djinn::Particle::getMass() const {
     if (inverseMass == 0) {
-        #ifdef DOUBLE_PRECISION
-            return std::numeric_limits<double>::max();
-        #else
-            return std::numeric_limits<float>::max();
-        #endif
+#ifdef DOUBLE_PRECISION
+        return std::numeric_limits<double>::max();
+#else
+        return std::numeric_limits<float>::max();
+#endif
     } else {
-        return ((real)1.0)/inverseMass;
+        return ((real)1.0) / inverseMass;
     }
 }
 
@@ -146,7 +168,7 @@ void djinn::Particle::clearAccumulator() {
     netForce.clear();
 }
 
-void djinn::Particle::addForce(const djinn::Vec3& f) {
+void djinn::Particle::addForce(const djinn::Vec3 &f) {
     netForce += f;
 }
 

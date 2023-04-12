@@ -2,7 +2,7 @@
  * @file pfgen.cpp
  * @brief Source file to define behavior for particle force generators
  * @author Catyre
-*/
+ */
 
 /* FORCES TO IMPLEMENT:
  *  Bouyancy
@@ -10,7 +10,6 @@
  *  Electricity
  *  Magnetism
  */
-
 
 /* FORCES IMPLEMENTED:
  *  Drag
@@ -20,17 +19,17 @@
 
 #define G 6.67408e-11 // [m^3 kg^-1 s^-2]
 
-#include <iostream>
-#include <algorithm>
 #include "djinn/pfgen.h"
 #include "spdlog/spdlog.h"
+#include <algorithm>
+#include <iostream>
 
-void djinn::ParticleUniversalForceRegistry::add(djinn::Particle* particle) {
+void djinn::ParticleUniversalForceRegistry::add(djinn::Particle *particle) {
     ParticleUniversalForceRegistration registration;
     registration.particle = particle;
-    
+
     // Don't add duplicates
-    if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
+    if (find(begin(registrations), end(registrations), registration) == end(registrations)) {
         registrations.push_back(registration);
 
         // Log registration
@@ -41,25 +40,25 @@ void djinn::ParticleUniversalForceRegistry::add(djinn::Particle* particle) {
     }
 }
 
-void djinn::ParticleUniversalForceRegistry::add(std::vector<djinn::Particle*> particles) {
-    for(std::vector<djinn::Particle*>::iterator particle = particles.begin(); particle != particles.end(); particle++) {
+void djinn::ParticleUniversalForceRegistry::add(std::vector<djinn::Particle *> particles) {
+    for (std::vector<djinn::Particle *>::iterator particle = particles.begin(); particle != particles.end(); particle++) {
         ParticleUniversalForceRegistration registration;
         registration.particle = *particle;
 
         // Don't add duplicates
-        if (find(begin(registrations), end(registrations), registration) == end(registrations)) { 
+        if (find(begin(registrations), end(registrations), registration) == end(registrations)) {
             registrations.push_back(registration);
 
             // Log registration
             spdlog::info("Added particle \"{}\" to universal force registry", (*particle)->getName());
         } else {
             // Log discard
-            spdlog::info("djinn::Particle \"{}\" already in universal force registry...discarding", (*particle)->getName());
+            spdlog::info("Particle \"{}\" already in universal force registry...discarding", (*particle)->getName());
         }
     }
 }
 
-void djinn::ParticleUniversalForceRegistry::remove(djinn::Particle* particle) {
+void djinn::ParticleUniversalForceRegistry::remove(djinn::Particle *particle) {
     for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         if (i->particle == particle) {
             registrations.erase(i);
@@ -105,7 +104,7 @@ void djinn::ParticleForceRegistry::updateForces(djinn::real duration) {
     }
 }
 
-void djinn::ParticleForceRegistry::add(djinn::Particle* particle, djinn::ParticleForceGenerator* fg) {
+void djinn::ParticleForceRegistry::add(djinn::Particle *particle, djinn::ParticleForceGenerator *fg) {
     ParticleForceRegistration registration;
     registration.particle = particle;
     registration.fg = fg;
@@ -130,7 +129,7 @@ void djinn::ParticleForceRegistry::integrateAll(djinn::real duration) {
     }
 }
 
-void djinn::ParticleForceRegistry::remove(djinn::Particle* particle, djinn::ParticleForceGenerator* fg) {
+void djinn::ParticleForceRegistry::remove(djinn::Particle *particle, djinn::ParticleForceGenerator *fg) {
     Registry::iterator i = registrations.begin();
 
     for (; i != registrations.end(); i++) {
@@ -145,17 +144,17 @@ void djinn::ParticleForceRegistry::clear() {
     registrations.clear();
 }
 
-djinn::ParticleEarthGravity::ParticleEarthGravity(const djinn::Vec3& gravity)
-: gravity(gravity) 
-{
+djinn::ParticleEarthGravity::ParticleEarthGravity(const djinn::Vec3 &gravity)
+    : gravity(gravity) {
 }
 
-void djinn::ParticleEarthGravity::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticleEarthGravity::updateForce(djinn::Particle *particle, djinn::real duration) {
     // Check if particle has a finite mass
-    if (!particle->hasFiniteMass()) return;
+    if (!particle->hasFiniteMass())
+        return;
 
     // Calculate force
-    djinn::Vec3 force =  gravity * particle->getMass();
+    djinn::Vec3 force = gravity * particle->getMass();
 
     // Apply force to the particle
     particle->addForce(force);
@@ -163,18 +162,18 @@ void djinn::ParticleEarthGravity::updateForce(djinn::Particle* particle, djinn::
     spdlog::info("Applied Earth gravity to particle \"{}\" ({})", particle->getName(), force.toString());
 }
 
-djinn::ParticlePointGravity::ParticlePointGravity(const djinn::Vec3& origin, const djinn::real mass)
-: origin(origin), mass(mass) 
-{
+djinn::ParticlePointGravity::ParticlePointGravity(const djinn::Vec3 &origin, const djinn::real mass)
+    : origin(origin), mass(mass) {
 }
 
-void djinn::ParticlePointGravity::setOrigin(const djinn::Vec3& origin) {
+void djinn::ParticlePointGravity::setOrigin(const djinn::Vec3 &origin) {
     this->origin = origin;
 }
 
-void djinn::ParticlePointGravity::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticlePointGravity::updateForce(djinn::Particle *particle, djinn::real duration) {
     // Check if particle has a finite mass
-    if (!particle->hasFiniteMass()) return;
+    if (!particle->hasFiniteMass())
+        return;
 
     djinn::Vec3 force;
 
@@ -186,7 +185,7 @@ void djinn::ParticlePointGravity::updateForce(djinn::Particle* particle, djinn::
     // Calculate the magnitude of the force
     djinn::real forceMagnitude = -G * particle->getMass() * mass / (distance * distance);
     force = direction * forceMagnitude;
-    
+
     // Apply the force
     particle->addForce(force);
 
@@ -194,7 +193,7 @@ void djinn::ParticlePointGravity::updateForce(djinn::Particle* particle, djinn::
     spdlog::info("Applied fixed-point gravitational force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void djinn::ParticlePointGravity::updateForce
 
-void djinn::ParticleDrag::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticleDrag::updateForce(djinn::Particle *particle, djinn::real duration) {
     djinn::Vec3 force;
     particle->getVelocity(&force);
 
@@ -211,11 +210,10 @@ void djinn::ParticleDrag::updateForce(djinn::Particle* particle, djinn::real dur
 } // void djinn::ParticleDrag::updateForce
 
 djinn::ParticleUplift::ParticleUplift(djinn::Vec3 origin, djinn::real radius)
-: origin(origin), radius(radius)
-{
+    : origin(origin), radius(radius) {
 }
 
-void djinn::ParticleUplift::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticleUplift::updateForce(djinn::Particle *particle, djinn::real duration) {
     djinn::Vec3 force;
 
     djinn::real x = particle->getPosition().x;
@@ -230,12 +228,11 @@ void djinn::ParticleUplift::updateForce(djinn::Particle* particle, djinn::real d
     }
 } // void djinn::ParticleUplift::updateForce
 
-djinn::ParticleSpring::ParticleSpring(djinn::Particle* other, djinn::real springConstant, djinn::real restLength)
-: other(other), springConstant(springConstant), restLength(restLength) 
-{
+djinn::ParticleSpring::ParticleSpring(djinn::Particle *other, djinn::real springConstant, djinn::real restLength)
+    : other(other), springConstant(springConstant), restLength(restLength) {
 }
 
-void djinn::ParticleSpring::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticleSpring::updateForce(djinn::Particle *particle, djinn::real duration) {
     // Calculate the vector of the spring
     djinn::Vec3 force = particle->getPosition();
     force -= other->getPosition();
@@ -249,7 +246,7 @@ void djinn::ParticleSpring::updateForce(djinn::Particle* particle, djinn::real d
     force.normalize();
     force *= -magnitude;
     particle->addForce(force);
-    
+
     // Log force application
     spdlog::info("Applied spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void djinn::ParticleSpring::updateForce
@@ -258,12 +255,11 @@ djinn::real djinn::ParticleSpring::calcCritDamping(djinn::real mass) {
     return 2 * real_sqrt(mass * springConstant);
 }
 
-djinn::ParticleAnchoredSpring::ParticleAnchoredSpring(djinn::Vec3* anchor, djinn::real springConstant, djinn::real restLength, djinn::real elasticLimit)
-: anchor(anchor), springConstant(springConstant), restLength(restLength), elasticLimit(elasticLimit)
-{
+djinn::ParticleAnchoredSpring::ParticleAnchoredSpring(djinn::Vec3 *anchor, djinn::real springConstant, djinn::real restLength, djinn::real elasticLimit)
+    : anchor(anchor), springConstant(springConstant), restLength(restLength), elasticLimit(elasticLimit) {
 }
 
-void djinn::ParticleAnchoredSpring::updateForce(djinn::Particle* particle, djinn::real duration) {
+void djinn::ParticleAnchoredSpring::updateForce(djinn::Particle *particle, djinn::real duration) {
     // Calculate the vector of the spring
     djinn::Vec3 force = particle->getPosition();
     force -= *anchor;
@@ -277,7 +273,8 @@ void djinn::ParticleAnchoredSpring::updateForce(djinn::Particle* particle, djinn
     force *= -magnitude;
 
     // If the spring is stretched too far, reduce its spring constant (and therefore the force) to a quarter
-    if(stretchedLength >= elasticLimit) force *= .25;
+    if (stretchedLength >= elasticLimit)
+        force *= .25;
 
     particle->addForce(force);
 
@@ -285,9 +282,8 @@ void djinn::ParticleAnchoredSpring::updateForce(djinn::Particle* particle, djinn
     spdlog::info("Applied anchored spring force to particle \"{}\" ({})", particle->getName(), force.toString());
 } // void djinn::ParticleAnchoredSpring::updateForce
 
-djinn::ParticleBungee::ParticleBungee(djinn::Particle *other, djinn::real springConstant, djinn::real restLength) 
-: other(other), springConstant(springConstant), restLength(restLength)
-{
+djinn::ParticleBungee::ParticleBungee(djinn::Particle *other, djinn::real springConstant, djinn::real restLength)
+    : other(other), springConstant(springConstant), restLength(restLength) {
 }
 
 void djinn::ParticleBungee::updateForce(djinn::Particle *particle, djinn::real duration) {
@@ -298,7 +294,8 @@ void djinn::ParticleBungee::updateForce(djinn::Particle *particle, djinn::real d
 
     // Check if the bungee is compressed.
     djinn::real magnitude = force.magnitude();
-    if (magnitude <= restLength) return;
+    if (magnitude <= restLength)
+        return;
 
     // Calculate the magnitude of the force.
     magnitude = springConstant * (restLength - magnitude);
@@ -313,13 +310,13 @@ void djinn::ParticleBungee::updateForce(djinn::Particle *particle, djinn::real d
 } // djinn::ParticleBungee::updateForce
 
 djinn::ParticleFakeSpring::ParticleFakeSpring(djinn::Vec3 *anchor, djinn::real springConstant, djinn::real damping)
-: anchor(anchor), springConstant(springConstant), damping(damping)
-{
+    : anchor(anchor), springConstant(springConstant), damping(damping) {
 }
 
 void djinn::ParticleFakeSpring::updateForce(djinn::Particle *particle, djinn::real duration) {
     // Check for finite non-zero mass
-    if(!particle->hasFiniteMass()) return;
+    if (!particle->hasFiniteMass())
+        return;
 
     djinn::Vec3 vel = particle->getVelocity();
 
@@ -330,8 +327,9 @@ void djinn::ParticleFakeSpring::updateForce(djinn::Particle *particle, djinn::re
 
     // Calculate constants and check that they are in bounds
     djinn::real gamma = 0.5 * real_sqrt(4 * springConstant - damping * damping);
-    if(gamma == 0.0) return;
-    djinn::Vec3 c = pos * (damping / (2.0 * gamma)) + vel * (1.0/gamma);
+    if (gamma == 0.0)
+        return;
+    djinn::Vec3 c = pos * (damping / (2.0 * gamma)) + vel * (1.0 / gamma);
 
     // Calculate the target position
     djinn::Vec3 target = pos * real_cos(gamma * duration) + c * real_sin(gamma * duration);

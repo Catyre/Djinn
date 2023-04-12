@@ -2,17 +2,18 @@
  * @file core.h
  * @brief Tools for vector math and other useful functions
  * @author Catyre
-*/
+ */
 
 #ifndef CORE_H
 #define CORE_H
+
 #define EPSILON 1e-15
 
 #include "precision.h"
 #include "raylib.h"
-#include <string>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 namespace djinn {
     class Vec3 {
@@ -48,122 +49,117 @@ namespace djinn {
             }
 
             // Get magnitude of vector
-            real magnitude() const {
-                return real_sqrt(x*x + y*y + z*z);
-            }
+            real magnitude() const { return real_sqrt(x * x + y * y + z * z); }
 
-            // Sometimes it is useful and faster to just have the square of the magnitude
-            real squareMagnitude() const {
-                return x * x + y * y + z * z;
-            }
+            // Sometimes it is useful and faster to just have the square of the
+            // magnitude
+            real squareMagnitude() const { return x * x + y * y + z * z; }
 
             // Normalize a non-zero vector
             void normalize() {
                 real l = magnitude();
                 if (l > 0) {
-                    (*this) *= ((real)1)/l;
+                    (*this) *= ((real)1) / l;
                 }
             }
 
             // Multiplies vector by given scalar
-            void operator *= (const real scalar) {
+            void operator*=(const real scalar) {
                 x *= scalar;
                 y *= scalar;
                 z *= scalar;
             }
 
             // Returns vector scaled by value
-            Vec3 operator * (const real value) const {
+            Vec3 operator*(const real value) const {
                 return Vec3(x * value, y * value, z * value);
             }
 
-            Vec3 operator / (const real value) const {
+            Vec3 operator/(const real value) const {
                 return Vec3(x / value, y / value, z / value);
             }
 
-            void operator /= (const real value) {
+            void operator/=(const real value) {
                 x /= value;
                 y /= value;
                 z /= value;
             }
 
             // Adds given vector
-            Vec3 operator + (const Vec3& v) const {
+            Vec3 operator+(const Vec3 &v) const {
                 return Vec3(x + v.x, y + v.y, z + v.z);
             }
 
-            void operator += (const Vec3& v) {
+            void operator+=(const Vec3 &v) {
                 x += v.x;
                 y += v.y;
                 z += v.z;
             }
 
             // Subtracts given vector
-            void operator -= (const Vec3& v) {
+            void operator-=(const Vec3 &v) {
                 x -= v.x;
                 y -= v.y;
                 z -= v.z;
             }
 
-            bool operator == (const Vec3& v) const {
+            bool operator==(const Vec3 &v) const {
                 return (*this - v).isZero();
             }
 
-            bool operator != (const Vec3& v) {
-                return !(*this == v);
-            }
+            bool operator!=(const Vec3 &v) { return !(*this == v); }
 
-            Vec3 operator - (const Vec3& v) const {
+            Vec3 operator-(const Vec3 &v) const {
                 return Vec3(x - v.x, y - v.y, z - v.z);
             }
 
             // Adds a given scaled vector
-            void addScaledVector(const Vec3& v, real scale) {
+            void addScaledVector(const Vec3 &v, real scale) {
                 x += (v.x * scale);
                 y += (v.y * scale);
                 z += (v.z * scale);
             }
 
             // Calculate COMPONENT product of this vector with a given one
-            Vec3 componentProduct(const Vec3& v) const {
+            Vec3 componentProduct(const Vec3 &v) const {
                 return Vec3(x * v.x, y * v.y, z * v.z);
             }
 
-            void componentProductUpdate(const Vec3& v) {
+            void componentProductUpdate(const Vec3 &v) {
                 x *= v.x;
                 y *= v.y;
                 z *= v.z;
             }
 
-            // Calculates and returns scalar product of this vector with given vector
-            real scalarProduct(const Vec3& v) const {
+            // Calculates and returns scalar product of this vector with given
+            // vector
+            real scalarProduct(const Vec3 &v) const {
                 return x * v.x + y * v.y + z * v.z;
             }
 
-            real operator * (const Vec3& v) const {
+            real operator*(const Vec3 &v) const {
                 return x * v.x + y * v.y + z * v.z;
             }
 
             // Calculate vector product of this vector and a given vector
-            Vec3 vectorProduct(const Vec3& v) const {
+            Vec3 vectorProduct(const Vec3 &v) const {
+                return Vec3(y * v.z - z * v.y, z * v.x - x * v.z,
+                            x * v.y - y * v.x);
+            }
+
+            // Updates this vector to be the vector product of its current value
+            // and the given vector
+            void operator%=(const Vec3 &v) { *this = vectorProduct(v); }
+
+            // Calculates and returns the vector product of this vector with the
+            // given vector
+            Vec3 operator%(const Vec3 &v) const {
                 return Vec3(y * v.z - z * v.y,
                             z * v.x - x * v.z,
                             x * v.y - y * v.x);
             }
 
-            // Updates this vector to be the vector product of its current value and the given vector
-            void operator %= (const Vec3& v) {
-                *this = vectorProduct(v);
-            }
-
-            // Calculates and returns the vector product of this vector with the given vector
-            Vec3 operator % (const Vec3& v) const {
-                return Vec3(y * v.z - z * v.y,
-                            z * v.x - x * v.z,
-                            x * v.y - y * v.x);
-            }
-
-            void operator = (const Vec3& v) {
+            void operator=(const Vec3 &v) {
                 x = v.x;
                 y = v.y;
                 z = v.z;
@@ -175,14 +171,17 @@ namespace djinn {
                 z = 0.0;
             }
 
-            bool isZero() const {
-                return this->magnitude() < EPSILON;
-            }
+            bool isZero() const { return this->magnitude() < EPSILON; }
 
             Vector3 toVector3() {
                 return (Vector3){static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
             }
+
+            real distance(const Vec3 &v) {
+                std::cout << "Test: " << this->toString() << std::endl;
+                return real_sqrt(real_pow(x - v.x, 2) + real_pow(y - v.y, 2) + real_pow(z - v.z, 2));
+            }
     }; // class Vec3
-}; // namespace djinn
+};     // namespace djinn
 
 #endif
