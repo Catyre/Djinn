@@ -48,6 +48,14 @@ namespace djinn {
                 return ss.str();
             }
 
+            std::string toString() const {
+                std::stringstream ss;
+
+                ss << std::scientific << "<" << x << ", " << y << ", " << z << ">";
+
+                return ss.str();
+            }
+
             // Get magnitude of vector
             real magnitude() const { return real_sqrt(x * x + y * y + z * z); }
 
@@ -178,7 +186,6 @@ namespace djinn {
             }
 
             real distance(const Vec3 &v) {
-                std::cout << "Test: " << this->toString() << std::endl;
                 return real_sqrt(real_pow(x - v.x, 2) + real_pow(y - v.y, 2) + real_pow(z - v.z, 2));
             }
     }; // class Vec3

@@ -18,10 +18,10 @@ std::string djinn::Particle::toString() {
         ss << this->name << ": " << std::endl;
     }
 
-    ss << std::scientific << "Position [m]:         |<" << this->pos.x << ", " << this->pos.y << ", " << this->pos.z << ">| = " << this->pos.magnitude() << std::endl
-       << "Velocity [m/s]:       |<" << this->vel.x << ", " << this->vel.y << ", " << this->vel.z << ">| = " << this->vel.magnitude() << std::endl
-       << "Acceleration [m/s^2]: |<" << this->acc.x << ", " << this->acc.y << ", " << this->acc.z << ">| = " << this->acc.magnitude() << std::endl
-       << "Net force [N]:        |<" << this->netForce.x << ", " << this->netForce.y << ", " << this->netForce.z << ">| = " << this->netForce.magnitude() << std::endl
+    ss << std::scientific << "Position [m]:         |" << this->pos.toString() << "| = " << this->pos.magnitude() << std::endl
+       << "Velocity [m/s]:       |" << this->vel.toString() << "| = " << this->vel.magnitude() << std::endl
+       << "Acceleration [m/s^2]: |" << this->acc.toString() << "| = " << this->acc.magnitude() << std::endl
+       << "Net force [N]:        |" << this->netForce.toString() << "| = " << this->netForce.magnitude() << std::endl
        << "Kinetic Energy [J]: " << this->kineticEnergy() << std::endl;
 
     return ss.str();
@@ -32,7 +32,7 @@ void djinn::Particle::integrate(djinn::real dt) {
     if (inverseMass <= 0.0)
         return;
 
-    assert(duration > 0.0);
+    assert(dt > 0.0);
 
     djinn::Vec3 pos0 = pos;
     acc.addScaledVector(netForce, inverseMass);
@@ -46,34 +46,6 @@ void djinn::Particle::integrate(djinn::real dt) {
 
     spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
 }
-
-// void djinn::Particle::integrate(djinn::real duration) {
-//     // We won't integrate particles with infinite or negative mass
-//     if (inverseMass <= 0.0)
-//         return;
-//
-//     assert(duration > 0.0);
-//
-//     djinn::Vec3 pos_i = pos;
-//
-//     acc.addScaledVector(netForce, inverseMass);
-//
-//     // Impose drag
-//     vel *= real_pow(damping, duration);
-//
-//     // Update linear velocity from the acceleration.
-//     vel.addScaledVector(acc, duration);
-//
-//     // Update linear position.
-//     pos.addScaledVector(vel, duration);
-//     djinn::Vec3 delta_x = pos - pos_i;
-//
-//     // Clear forces and acceleration
-//     clearAccumulator();
-//     acc = djinn::Vec3();
-//
-//     spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
-// } // Particle::integrate()
 
 djinn::real djinn::Particle::kineticEnergy() {
     return .5 * ((real)1.0) / inverseMass * real_pow(vel.magnitude(), 2);

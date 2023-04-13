@@ -1,12 +1,3 @@
-macro(print_all_variables)
-    message(STATUS "print_all_variables------------------------------------------{")
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
-    message(STATUS "print_all_variables------------------------------------------}")
-endmacro()
-
 cmake_minimum_required(VERSION 3.25.1)
 project(
   Djinn
@@ -39,10 +30,10 @@ set(spdlog ${DJINN_DIR}/lib/spdlog)
 include_directories(${spdlog}/include)
 add_subdirectory(${spdlog})
 
-set(djinn ${DJINN_DIR})
-include_directories(${DJINN_DIR}/include)
-add_subdirectory(djinn)
-link_directories(${DJINN_DIR}/lib/djinn)
+#set(djinn ${DJINN_DIR})
+#include_directories(${DJINN_DIR}/include)
+#add_subdirectory(djinn)
+#link_directories(${DJINN_DIR}/lib/djinn)
 
 find_library(DJINN_L NAMES djinn HINTS ${DJINN_DIR}/lib/djinn)
 
@@ -98,5 +89,3 @@ foreach(testsourcefile ${PROJECT_DEMOS})
   endif()
 
 endforeach(testsourcefile ${PROJECT_DEMOS})
-
-print_all_variables()
