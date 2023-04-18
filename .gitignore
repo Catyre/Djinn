@@ -2,7 +2,6 @@
 docs
 
 # Logs
-logs
 .cache
 
 # Mac default files
@@ -12,13 +11,10 @@ djinn/include/.DS_Store
 src/.DS_Store
 src/demos/.DS_Store
 
-obj
-build 
+build
 bin
 djinn/lib/djinn
 validation
-
-dependencies.png
 
 .clang-format
 

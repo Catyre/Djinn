@@ -6,7 +6,9 @@ project(
   LANGUAGES CXX)
 
 # Set C++ standard to C++11 (Necessary for header-only spdlog)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 # Define output directory for the executables
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
@@ -16,6 +18,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Shorter variable
 set(DJINN_DIR ${CMAKE_CURRENT_LIST_DIR}/djinn)
+set(DJINN_INC ${DJINN_DIR}/include)
+set(DJINN_SRC ${DJINN_DIR}/src)
+set(DJINN_DEMOS ${DJINN_SRC}/demos)
 
 # Install raylib
 set(raylib ${DJINN_DIR}/lib/raylib)
@@ -31,41 +36,42 @@ include_directories(${spdlog}/include)
 add_subdirectory(${spdlog})
 
 #set(djinn ${DJINN_DIR})
-#include_directories(${DJINN_DIR}/include)
+include_directories(${DJINN_DIR}/include)
 #add_subdirectory(djinn)
 #link_directories(${DJINN_DIR}/lib/djinn)
 
-find_library(DJINN_L NAMES djinn HINTS ${DJINN_DIR}/lib/djinn)
+#find_library(DJINN_L NAMES djinn HINTS ${DJINN_DIR}/lib/djinn)
 
 # Install library headers
-string(APPEND HEADERS "${DJINN_DIR}/include/rlFPCamera.h;"
-                      "${DJINN_DIR}/include/rlHelper.h;"
-                      "${DJINN_DIR}/include/djinn/core.h;"
-                      "${DJINN_DIR}/include/djinn/numerical.h;"
-                      "${DJINN_DIR}/include/djinn/particle.h;"
-                      "${DJINN_DIR}/include/djinn/pcontacts.h;"
-                      "${DJINN_DIR}/include/djinn/pfgen.h;"
-                      "${DJINN_DIR}/include/djinn/plinks.h;"
-                      "${DJINN_DIR}/include/djinn/potgen.h;"
-                      "${DJINN_DIR}/include/djinn/precision.h;"
-                      "${DJINN_DIR}/include/djinn/pworld.h;")
+string(APPEND HEADERS "${DJINN_INC}/rlFPCamera.h;" 
+                      "${DJINN_INC}/rlHelper.h;"
+                      "${DJINN_INC}/djinn/core.h;"
+                      "${DJINN_INC}/djinn/numerical.h;"
+                      "${DJINN_INC}/djinn/particle.h;"
+                      "${DJINN_INC}/djinn/pcontacts.h;"
+                      "${DJINN_INC}/djinn/pfgen.h;"
+                      "${DJINN_INC}/djinn/plinks.h;"
+                      "${DJINN_INC}/djinn/potgen.h;"
+                      "${DJINN_INC}/djinn/precision.h;"
+                      "${DJINN_INC}/djinn/pworld.h;")
 
 # Adding our source files
-string(APPEND PROJECT_SOURCES "${DJINN_DIR}/src/numerical.cpp;"
-                              "${DJINN_DIR}/src/particle.cpp;"
-                              "${DJINN_DIR}/src/pcontacts.cpp;"
-                              "${DJINN_DIR}/src/pfgen.cpp;"
-                              "${DJINN_DIR}/src/plinks.cpp;"
-                              "${DJINN_DIR}/src/potgen.cpp;"
-                              "${DJINN_DIR}/src/pworld.cpp;"
-                              "${DJINN_DIR}/src/rlFPCamera.cpp;"
-                              "${DJINN_DIR}/src/rlHelper.cpp;") # Define PROJECT_SOURCES as a list of all source files
+string(APPEND PROJECT_SOURCES "${DJINN_SRC}/numerical.cpp;"
+                              "${DJINN_SRC}/particle.cpp;"
+                              "${DJINN_SRC}/pcontacts.cpp;"
+                              "${DJINN_SRC}/pfgen.cpp;"
+                              "${DJINN_SRC}/plinks.cpp;"
+                              "${DJINN_SRC}/potgen.cpp;"
+                              "${DJINN_SRC}/pworld.cpp;"
+                              "${DJINN_SRC}/rlFPCamera.cpp;"
+                              "${DJINN_SRC}/rlHelper.cpp;") # Define PROJECT_SOURCES as a list of all source files
 
-string(APPEND PROJECT_DEMOS "${DJINN_DIR}/src/demos/bouncyball.cpp;"
-                            "${DJINN_DIR}/src/demos/lunarorbit.cpp;"
-                            "${DJINN_DIR}/src/demos/solarsystem.cpp;"
-                            "${DJINN_DIR}/src/demos/springmass.cpp;"
-                            "${DJINN_DIR}/src/demos/thermo.cpp")
+string(APPEND PROJECT_DEMOS "${DJINN_DEMOS}/bouncyball.cpp;"
+                            "${DJINN_DEMOS}/lunarorbit.cpp;"
+                            "${DJINN_DEMOS}/solarsystem.cpp;"
+                            "${DJINN_DEMOS}/springmass.cpp;"
+                            "${DJINN_DEMOS}/thermo.cpp;"
+                            "${DJINN_DEMOS}/RK4ND.cpp")
 
 # Iterate through all demo files and create a make command and executable for
 # each

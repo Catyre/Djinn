@@ -41,7 +41,8 @@ void djinn::Particle::integrate(djinn::real dt) {
 
     djinn::Vec3 delta_x = pos - pos0;
 
-    clearAccumulator();
+    clearNetForce();
+    clearNetPotential();
     acc = djinn::Vec3();
 
     spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
@@ -136,12 +137,20 @@ djinn::real djinn::Particle::getInverseMass() const {
     return inverseMass;
 }
 
-void djinn::Particle::clearAccumulator() {
+void djinn::Particle::clearNetForce() {
     netForce.clear();
+}
+
+void djinn::Particle::clearNetPotential() {
+    netPotential = 0;
 }
 
 void djinn::Particle::addForce(const djinn::Vec3 &f) {
     netForce += f;
+}
+
+void djinn::Particle::addPotential(const djinn::real potential) {
+    netPotential += potential;
 }
 
 bool djinn::Particle::hasFiniteMass() const {

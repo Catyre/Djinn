@@ -11,10 +11,10 @@
 
 namespace djinn {
     // Type aliases for readability
-    using ODE = std::function<Vec3(Vec3, real)>;
+    using ODE = std::function<VecN(VecN, real)>;
 
     // Function declarations
-    Vec3 rungeKutta4(const ODE &func, Vec3 &initial, const real t, const real dt);
+    VecN rungeKutta4(const ODE &func, const VecN &initial, const real t, const real dt);
 
     // Loup Verlet algorithm
     void verletAlgorithm(Vec3 &x, Vec3 &v, Vec3 a, real dt);

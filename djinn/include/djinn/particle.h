@@ -35,11 +35,12 @@ namespace djinn {
             real inverseMass;
 
             Vec3 netForce;
+            real netPotential;
 
         public:
             Particle()
                 : pos(Vec3(0, 0, 0)), vel(Vec3(0, 0, 0)), acc(Vec3(0, 0, 0)),
-                  damping((real)1.0), inverseMass(0), name(""){};
+                  damping((real)1.0), inverseMass(1), name(""){};
 
             Particle(const Vec3 pos, const Vec3 vel, const Vec3 acc,
                      const real damping, const real inverseMass,
@@ -87,9 +88,13 @@ namespace djinn {
 
             Vec3 getAcceleration() const;
 
-            void clearAccumulator();
+            void clearNetForce();
+
+            void clearNetPotential();
 
             void addForce(const Vec3 &f);
+
+            void addPotential(const real potential);
 
             Vec3 getNetForce() const;
 

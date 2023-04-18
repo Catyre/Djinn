@@ -8,20 +8,32 @@
 #include <array>
 #include <iostream>
 
-// Reminder: "using ODE = std::function<Vec3(Vec3, real)>;" - djinn/numerical.h
-djinn::Vec3 djinn::rungeKutta4(const djinn::ODE &func, djinn::Vec3 &initial, const djinn::real t, const djinn::real dt) {
-    // Array to store the k-values (k[1-4])
-    djinn::Vec3 k[4];
+// Reminder: "using ODE = std::function<VecN(VecN, real)>;" - djinn/numerical.h
+djinn::VecN djinn::rungeKutta4(const djinn::ODE &func, const djinn::VecN &initial, const djinn::real t, const djinn::real dt) {
+    // RK4 in N dimensions
+    djinn::VecN k[4];
+    djinn::real constant = 0.5;
 
-    // Update k1
-    k[0] = func(initial, t) * dt;
+    k[0] = func(initial, t);
 
     // Update k[2-4]
-    for (int i = 1; i < std::end(k) - std::begin(k); i++)
-        k[i] = func(initial + k[i - 1] * 0.5, t + 0.5 * dt) * dt;
+    for (int i = 1; i < std::end(k) - std::begin(k); i++) {
+        // k4 = f(initial + k3 * dt, t + dt)
+        if (i == 3)
+            constant = 1;
+
+        k[i] = func(initial + k[i - 1] * dt * constant, t + dt * constant);
+    }
+
+    // djinn::VecN init = initial;
+    // std::cout << init.toString() << std::endl;
+    // for (auto k_n : k) {
+    //     std::cout << " " << k_n.toString();
+    // }
+    // std::cout << std::endl;
 
     // Return the k values weighted according to RK4
-    return initial + (k[0] + k[1] * 2 + k[2] * 2 + k[3]) * (1.0 / 6.0);
+    return initial + (k[0] + k[1] * 2 + k[2] * 2 + k[3]) * (dt / 6.0);
 }
 
 /*

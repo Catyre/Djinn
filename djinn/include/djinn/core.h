@@ -12,10 +12,35 @@
 #include "precision.h"
 #include "raylib.h"
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <string>
+#include <variant>
 
 namespace djinn {
+    class Vec2 {
+        public:
+            real x;
+            real y;
+
+            Vec2() : x(0), y(0) {}
+            Vec2(const real x, const real y) : x(x), y(y) {}
+
+            // = overloads
+            void operator=(const Vec2 &v) {
+                x = v.x;
+                y = v.y;
+            }
+
+            std::string toString() {
+                std::stringstream ss;
+
+                ss << std::scientific << "<" << x << ", " << y << ">";
+
+                return ss.str();
+            }
+    };
+
     class Vec3 {
         public:
             // Spatial coordinates
@@ -189,6 +214,40 @@ namespace djinn {
                 return real_sqrt(real_pow(x - v.x, 2) + real_pow(y - v.y, 2) + real_pow(z - v.z, 2));
             }
     }; // class Vec3
-};     // namespace djinn
 
-#endif
+    class VecN : public Vec3, public Vec2 {
+        public:
+            std::optional<real> vec1;
+            std::optional<Vec2> vec2;
+            std::optional<Vec3> vec3;
+
+            // Constructors for the different cases of VecN instantiation
+            VecN() : vec1(0), vec3(Vec3(0, 0, 0)) {}
+
+            VecN(const real x) : vec1(x) {}
+
+            VecN(const Vec2 vec) : Vec2(vec.x, vec.y) {
+                vec2 = vec;
+            }
+
+            VecN(const Vec3 &vec) : Vec3(vec.x, vec.y, vec.z) {
+                vec3 = vec;
+            }
+
+            std::string toString() {
+                std::stringstream ss;
+
+                if (vec1.has_value())
+                    ss << "1D: " << std::to_string(vec1.value()) << std::endl;
+                if (vec2.has_value())
+                    ss << "2D: " << vec2.value().toString() << std::endl;
+                if (vec3.has_value())
+                    ss << "3D: " << vec3.value().toString() << std::endl;
+
+                return ss.str();
+            }
+    }; // class VecN
+
+}; // namespace djinn
+
+#endif // CORE_H
