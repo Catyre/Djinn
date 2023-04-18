@@ -107,7 +107,6 @@ int main() {
 
     InitWindow(screenWidth, screenHeight, "Djinn - Thermodynamics Demo");
 
-    // Define the camera to look into our 3d world (position, target, up vector)
     rlFPCamera cam;
     cam.Setup(45, Vector3{0, 2, 0});
     cam.MoveSpeed.z = 1.0;
