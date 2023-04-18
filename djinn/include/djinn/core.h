@@ -89,11 +89,20 @@ namespace djinn {
             real squareMagnitude() const { return x * x + y * y + z * z; }
 
             // Normalize a non-zero vector
-            void normalize() {
+            // void normalize() {
+            //    real l = magnitude();
+            //    if (l > 0) {
+            //        (*this) *= ((real)1) / l;
+            //    }
+            //}
+
+            Vec3 normalize() {
                 real l = magnitude();
                 if (l > 0) {
-                    (*this) *= ((real)1) / l;
+                    return (*this) * ((real)1) / l;
                 }
+
+                return Vec3(0, 0, 0);
             }
 
             // Multiplies vector by given scalar

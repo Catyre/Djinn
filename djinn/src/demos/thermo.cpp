@@ -1,6 +1,6 @@
 /**
  * @file thermo.cpp
- * @brief Demo of two gases reaching thermodynamic equilibrium
+ * @brief Demo of a gas reaching thermodynamic equilibrium
  * @author Catyre
  */
 
@@ -68,15 +68,14 @@ void checkBoundaries(djinn::Particle *particles, djinn::Vec3 bounds, int num_par
 }
 
 // Calculates the distances of each pair of particles
-distances calculateDistances(djinn::Particle particles[], int num_particles) {
-    distances r;
+void calculateDistances(djinn::Particle particles[], distances &all_r, int num_particles) {
+    // distances r;
     djinn::Vec3 p_i, p_j, r_vec;
     djinn::real r_mag, x, y, z;
 
     // Calculate distance between every pair of particles
     for (int i = 0; i < num_particles; i++) {
         p_i = particles[i].getPosition();
-        r.push_back(std::vector<distance>());
 
         // j < i is an optimization to fill only the bottom triangle of the 2x2 matrix
         //  (since r_ij = -r_ji)
@@ -86,11 +85,9 @@ distances calculateDistances(djinn::Particle particles[], int num_particles) {
             r_mag = r_vec.magnitude();
             distance data = {r_vec, r_mag};
 
-            r[i].push_back(data);
+            all_r[i][j] = data;
         }
     }
-
-    return r;
 }
 
 int main() {
@@ -113,9 +110,9 @@ int main() {
     // Define the camera to look into our 3d world (position, target, up vector)
     rlFPCamera cam;
     cam.Setup(45, Vector3{0, 2, 0});
-    cam.MoveSpeed.z = 1.5;
-    cam.MoveSpeed.x = 1.5;
-    cam.MoveSpeed.y = 1.5;
+    cam.MoveSpeed.z = 1.0;
+    cam.MoveSpeed.x = 1.0;
+    cam.MoveSpeed.y = 1.0;
 
     // SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -128,25 +125,40 @@ int main() {
     djinn::real epsilon = 0.38e-9; // Lennard-Jones parameter
     djinn::real potential;
     djinn::LennardJones lj = djinn::LennardJones(sigma, epsilon);
+    distances all_r;
 
     djinn::PotentialRegistry u_reg;
 
     // Define boundary conditions
     djinn::Vec3 bounds = djinn::Vec3(1, 1, 1);
+    Vector3 sq_center = bounds.normalize().toVector3();
+    // Vector3 rl_bounds = Vector3(bounds.x, bounds.y, bounds.z);
 
     // Define a big array of particles
-    int num_particles = 250;
+    int num_particles = 750;
     djinn::Particle particles[num_particles];
     // And an array for the raylib-based particle objects
     Vector3 rl_particles[num_particles];
 
     // Randomize each of their positions and add them to the potential registry
     for (int i = 0; i < num_particles; i++) {
+        all_r.push_back(std::vector<distance>());
+
+        for (int j = 0; j < i; j++) {
+            all_r[i].push_back({djinn::Vec3{0, 0, 0}, 0.0});
+        }
+
         particles[i].setPosition(randomReal(0, (int)bounds.x),
                                  randomReal(0, (int)bounds.y),
                                  randomReal(0, (int)bounds.z));
 
         u_reg.add(&particles[i], &lj);
+    }
+
+    if (num_particles == 1) {
+        particles[0].setVelocity(randomReal(0, (int)bounds.x),
+                                 randomReal(0, (int)bounds.y),
+                                 randomReal(0, (int)bounds.z));
     }
 
     while (!WindowShouldClose()) {
@@ -157,7 +169,7 @@ int main() {
         checkBoundaries(&particles[0], bounds, num_particles);
 
         // Calculate the distances of each pair of particles
-        distances all_r = calculateDistances(particles, num_particles);
+        calculateDistances(particles, all_r, num_particles);
 
         // Update the force of each particle according to the Lennard-Jones
         // potential
@@ -176,7 +188,7 @@ int main() {
         cam.BeginMode3D();
         DrawGrid(100, 0.1f);
 
-        DrawCubeWires((bounds / real_sqrt(3)).toVector3(), 0.9, 0.9, 0.9, WHITE);
+        DrawCubeWires(sq_center, 0.9, 0.9, 0.9, WHITE);
 
         for (int i = 0; i < num_particles; i++) {
             DrawSphere(rl_particles[i], 0.005, RED);

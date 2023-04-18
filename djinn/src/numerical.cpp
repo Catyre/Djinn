@@ -25,13 +25,6 @@ djinn::VecN djinn::rungeKutta4(const djinn::ODE &func, const djinn::VecN &initia
         k[i] = func(initial + k[i - 1] * dt * constant, t + dt * constant);
     }
 
-    // djinn::VecN init = initial;
-    // std::cout << init.toString() << std::endl;
-    // for (auto k_n : k) {
-    //     std::cout << " " << k_n.toString();
-    // }
-    // std::cout << std::endl;
-
     // Return the k values weighted according to RK4
     return initial + (k[0] + k[1] * 2 + k[2] * 2 + k[3]) * (dt / 6.0);
 }
