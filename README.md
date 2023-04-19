@@ -23,6 +23,7 @@ Current To-do list:
 - Make a graphical demo for the spring-mass system depicted in src/demos/springmass.cpp
 - Build a GUI so that simulations can be built outside of a literal program
 - Come up with more ideas for demos
+- GPU Acceleration for the M1 chip using Apple's Metal API
 
 ### Installing Djinn
 Djinn relies on two other libraries: [spdlog](https://github.com/gabime/spdlog) for logging data about simulations, and [raylib](https://github.com/raysan5/raylib) to create the graphics that bring the simulated data to life.  These dependencies are handled in the cloning process of this repository:
