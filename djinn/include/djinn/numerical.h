@@ -8,6 +8,7 @@
 #define NUMERICAL_H
 
 #include "core.h"
+#include <functional>
 
 namespace djinn {
     // Type aliases for readability

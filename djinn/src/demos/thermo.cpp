@@ -58,12 +58,26 @@ void checkBoundaries(djinn::Particle *particles, djinn::Vec3 bounds, int num_par
                               particles[j].getVelocity().y,
                               particles[j].getVelocity().z};
 
-        for (int i = 0; i < sizeof(pos) / sizeof(pos[0]); i++) {
-            if (pos[i] >= upper_bound[i] || pos[i] <= 0) {
-                vel[i] *= -1;
-                particles[j].setVelocity(vel[0], vel[1], vel[2]);
-            }
+        // for (int i = 0; i < sizeof(pos) / sizeof(pos[0]); i++) {
+        //     if (pos[i] >= upper_bound[i] || pos[i] <= 0) {
+        //         vel[i] *= -1;
+        //         particles[j].setVelocity(vel[0], vel[1], vel[2]);
+        //     }
+        // }
+
+        if (pos[0] >= upper_bound[0] || pos[0] <= 0) {
+            vel[0] *= -1;
         }
+
+        if (pos[1] >= upper_bound[1] || pos[1] <= 0) {
+            vel[1] *= -1;
+        }
+
+        if (pos[2] >= upper_bound[2] || pos[2] <= 0) {
+            vel[2] *= -1;
+        }
+
+        particles[j].setVelocity(vel[0], vel[1], vel[2]);
     }
 }
 
@@ -131,7 +145,6 @@ int main() {
     // Define boundary conditions
     djinn::Vec3 bounds = djinn::Vec3(1, 1, 1);
     Vector3 sq_center = bounds.normalize().toVector3();
-    // Vector3 rl_bounds = Vector3(bounds.x, bounds.y, bounds.z);
 
     // Define a big array of particles
     int num_particles = 750;
