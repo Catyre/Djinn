@@ -1,5 +1,5 @@
 ## Welcome to the Djinn Engine!
-Currently, this engine is in its very very early form.  In fact, at the moment, it can only support gravitational forces, spring forces, a generic "uplift" force, and some others with demos only built for gravity (solarsystem and lunarorbit) and a brief demonstration of collisions (bouncyball).
+Currently, this engine is in its very early form.  In fact, at the moment, it can only support gravitational forces, spring forces, a generic "uplift" force, the Lennard-Jones potential, and some others with demos only built for gravity (solarsystem and lunarorbit) and a brief demonstration of collisions (bouncyball).
 
 This repository was made as a means of quickly sharing my codebase to people so they can help me troubleshoot problems/offer help in the design of the engine.
 
@@ -47,3 +47,4 @@ At this point, CMake should have output a `Djinn/bin/` directory that contains t
 - solarsystem
 - lunarorbit
 - springmass
+- thermo
