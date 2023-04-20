@@ -23,7 +23,12 @@ Current To-do list:
 - Make a graphical demo for the spring-mass system depicted in src/demos/springmass.cpp
 - Build a GUI so that simulations can be built outside of a literal program
 - Come up with more ideas for demos
-- GPU Acceleration for the M1 chip using Apple's Metal API
+- Investigate plausibility of GPU Acceleration for the M1 chip using Apple's Metal API
+- Investigate plausibility of SIMD optimization
+
+### New in Djinn!
+- Established a framework for N-dimenionsal vector math (currently only supports N <= 3, but there is framework for adding higher dimensions)
+- Implemented Runge-Kutta 4 for arbitrary f'(r, t) where r is of N dimensions
 
 ### Installing Djinn
 Djinn relies on two other libraries: [spdlog](https://github.com/gabime/spdlog) for logging data about simulations, and [raylib](https://github.com/raysan5/raylib) to create the graphics that bring the simulated data to life.  These dependencies are handled in the cloning process of this repository:
