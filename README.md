@@ -9,7 +9,7 @@ https://user-images.githubusercontent.com/7707850/226810901-94b4dbc5-546b-474b-8
 
 This is a video demonstrating the `solarsystem` demo, which simulates the orbits of the inner planets and Jupiter.  The orbits, speeds, and relative sizes are to scale, however orbital distances are not to scale with the radii of the planets.
 
-https://user-images.githubusercontent.com/7707850/232650381-0e58d14a-2ceb-4027-9c30-19031f3857c7.mov
+https://user-images.githubusercontent.com/7707850/234100228-57551303-d4b9-4791-80fc-a8391228fd8c.mov
 
 This is another example of a demo in Djinn named `thermo`.  It simulates N-particles in a box subject to a Lennard-Jones potential.
 
