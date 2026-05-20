@@ -13,8 +13,12 @@ src/demos/.DS_Store
 
 build
 bin
-djinn/lib/djinn
+djinn/lib/
+djinn/lib_old
 validation
 
 .clang-format
-
+C*
+_deps
+Makefile
+logs

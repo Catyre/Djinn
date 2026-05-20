@@ -74,9 +74,14 @@ void djinn::ParticleUniversalForceRegistry::applyGravity() {
     for (Registry::iterator i = registrations.begin(); i != registrations.end(); i++) {
         for (Registry::iterator j = registrations.begin(); j != registrations.end(); j++) {
             if (i->particle != j->particle) {
+                // Calculate radius between the two bodies
                 djinn::Vec3 r = i->particle->getPosition() - j->particle->getPosition();
+
+                // Square magnitude
                 djinn::real rMagSquared = r.squareMagnitude();
-                r.normalize();
+
+                // Normalize radius vector (to only use direction)
+                r = r.normalize();
                 djinn::Vec3 force = r * (-G * i->particle->getMass() * j->particle->getMass()) / (rMagSquared);
                 i->particle->addForce(force);
 

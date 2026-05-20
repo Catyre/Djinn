@@ -36,6 +36,7 @@ void djinn::Particle::integrate(djinn::real dt) {
 
     djinn::Vec3 pos0 = pos;
     acc.addScaledVector(netForce, inverseMass);
+    spdlog::info("Particle with net force of: {}", netForce.toString());
 
     djinn::verletAlgorithm(pos, vel, acc, dt);
 
@@ -45,7 +46,7 @@ void djinn::Particle::integrate(djinn::real dt) {
     clearNetPotential();
     acc = djinn::Vec3();
 
-    spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
+    //spdlog::info("Particle \"{}\" integrated and forces/acceleration cleared (Δx = {})", this->name, delta_x.toString());
 }
 
 djinn::real djinn::Particle::kineticEnergy() {
@@ -141,13 +142,15 @@ void djinn::Particle::clearNetForce() {
     netForce.clear();
 }
 
+void djinn::Particle::addForce(const Vec3 &f) {
+    netForce += f;
+}
+
 void djinn::Particle::clearNetPotential() {
     netPotential = 0;
 }
 
-void djinn::Particle::addForce(const djinn::Vec3 &f) {
-    netForce += f;
-}
+#include <deque>
 
 void djinn::Particle::addPotential(const djinn::real potential) {
     netPotential += potential;

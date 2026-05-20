@@ -67,7 +67,7 @@ int main() {
 
     // Define the camera to look into our 3d world (position, target, up vector)
     rlFPCamera cam;
-	cam.Setup(45, Vector3{ 10, 5, 10 });
+	cam.Setup(45, Vector3{ 0, 15, -60 });
 	cam.MoveSpeed.z = 10;
 	cam.MoveSpeed.x = 10;
     cam.MoveSpeed.y = 10;
@@ -77,7 +77,7 @@ int main() {
     //--------------------------------------------------------------------------------------
 
     // Define a ball
-    djinn::Vec3 ball_xi = djinn::Vec3(0, 100, 0); // [m]
+    djinn::Vec3 ball_xi = djinn::Vec3(0, 70, 0); // [m]
     djinn::Vec3 ball_vi = djinn::Vec3(0, 0, 0); // [m/s]
     djinn::Vec3 ball_ai = djinn::Vec3(0, 0, 0); // [m/s^2]
 
@@ -128,7 +128,7 @@ int main() {
 
             cam.BeginMode3D();
 
-                DrawGrid(25, 1.0f);        // Draw a grid
+                DrawGrid(50, 1.0f);        // Draw a grid
 
                 DrawSphere(ball->getPosition().toVector3(), BALLRADIUS, RED);
 

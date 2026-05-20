@@ -28,8 +28,10 @@ int main() {
     try {
         auto logger = spdlog::basic_logger_mt("lunarorbit", "logs/lunarorbit.log", true);
         spdlog::set_default_logger(logger);
+        spdlog::flush_on(spdlog::level::info);
+        spdlog::info("SPDLOG: Log init successful");
     } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log init failed: " << ex.what() << std::endl;
+        std::cout << "SPDLOG: Log init failed: " << ex.what() << std::endl;
         return 0;
     }
 

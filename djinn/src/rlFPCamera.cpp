@@ -114,7 +114,7 @@ void rlFPCamera::BeginMode3D()
     if (ViewCamera.projection == CAMERA_PERSPECTIVE)
     {
         // Setup perspective projection
-        double top = RL_CULL_DISTANCE_NEAR * tan(ViewCamera.fovy * 0.5 * DEG2RAD);
+        double top = NearPlane * tan(ViewCamera.fovy * 0.5 * DEG2RAD);
         double right = top * aspect;
 
         rlFrustum(-right, right, -top, top, NearPlane, FarPlane);
@@ -366,7 +366,7 @@ Ray rlFPCamera::GetMouseRay(Vector2 mouse) const
     if (ViewCamera.projection == CAMERA_PERSPECTIVE)
     {
         // Calculate projection matrix from perspective
-        matProj = MatrixPerspective(ViewCamera.fovy * DEG2RAD, ((double)TargetSize.x / (double)TargetSize.y), RL_CULL_DISTANCE_NEAR, RL_CULL_DISTANCE_FAR);
+        matProj = MatrixPerspective(ViewCamera.fovy * DEG2RAD, ((double)TargetSize.x / (double)TargetSize.y), NearPlane, FarPlane);
     }
     else if (ViewCamera.projection == CAMERA_ORTHOGRAPHIC)
     {

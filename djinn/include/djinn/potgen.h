@@ -18,7 +18,7 @@ namespace djinn {
             // "var" is a generic variable representing whatever quantity is
             //      needed to calculate the potential (position/distance, time, etc.)
             virtual void updatePotential(Particle *particle, real var) = 0;
-            virtual void updateForce(Particle *particle, real var, real dvar) = 0;
+            virtual void updateForce(Particle *particle, Vec3 r_vec, real r_mag, real dvar) = 0;
     }; // class PotentialGenerator
 
     class PotentialRegistry {
@@ -63,13 +63,19 @@ namespace djinn {
 
     class LennardJones : public PotentialGenerator {
             // Lennard-Jones parameter (depth of well), Lennard-Jones parameter (null potential)
-            real sigma, epsilon;
+            // Originially 0.34e-9, 0.38e-9
+            real sig;   // Lennard-Jones parameter
+            real eps; // Lennard-Jones parameter
 
         public:
-            LennardJones(real sigma, real epsilon);
+            LennardJones(real sigma, real epsilon) : sigma(sig), epsilon(eps) {};
 
             virtual void updatePotential(Particle *particle, real var);
-            virtual void updateForce(Particle *particle, real var, real dvar);
+            virtual void updateForce(Particle *particle, Vec3 r_vec, real r_mag, real dvar);
+
+        private:
+            real sigma;
+            real epsilon;
     }; // class LennardJones
 } // namespace djinn
 

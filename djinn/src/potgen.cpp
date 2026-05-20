@@ -42,7 +42,7 @@ void djinn::PotentialRegistry::integrateAll(djinn::real duration) {
         i->particle->integrate(duration);
 
         // Log integration
-        spdlog::info("Integrated particle in potential registry");
+        //spdlog::info("Integrated particle in potential registry");
     }
 }
 
@@ -50,9 +50,6 @@ void djinn::PotentialRegistry::clear() {
     registrations.clear();
 }
 
-djinn::LennardJones::LennardJones(djinn::real sigma, djinn::real epsilon)
-    : sigma(sigma), epsilon(epsilon) {
-}
 
 void djinn::LennardJones::updatePotential(djinn::Particle *particle, djinn::real var) {
     djinn::real sr6 = real_pow(sigma / var, 6);
@@ -60,14 +57,17 @@ void djinn::LennardJones::updatePotential(djinn::Particle *particle, djinn::real
 }
 
 // F = -grad(U)
-void djinn::LennardJones::updateForce(djinn::Particle *particle, djinn::real var, djinn::real dvar) {
-    djinn::Vec3 pos = particle->getPosition();
+void djinn::LennardJones::updateForce(djinn::Particle *particle, djinn::Vec3 r_vec, djinn::real r_mag, djinn::real dvar) {
+    djinn::real r2 = r_mag * r_mag;
+    djinn::Vec3 r_hat = r_vec / r_mag;
 
-    djinn::Vec3 force = djinn::rungeKutta4([=](djinn::Vec3 r, djinn::real dr) {
-        djinn::real sr6 = real_pow(sigma / r.magnitude(), 6);
-        return 4 * epsilon * (sr6 * sr6 - sr6);
-    },
-                                           pos, var, dvar);
+    djinn::real sigmaSq = sigma * sigma;
+    djinn::real u = sigmaSq / r2;
+    djinn::real u3 = u * u * u;
+    djinn::real u6 = u3 * u3;
+    
+    djinn::real forceMag = (24.0f * epsilon / r2) * (2.0f * u6 - u3);
+    djinn::Vec3 force = r_hat * forceMag;
 
     particle->addForce(force);
 }

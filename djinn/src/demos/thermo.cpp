@@ -16,11 +16,16 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <deque>
 
 #define CAMERA_IMPLEMENTATION
 
-typedef std::pair<djinn::Vec3, djinn::real> distance;
-typedef std::vector<std::vector<distance>> distances;
+djinn::real dt = 6e-4;
+djinn::real dr = 1e-3;
+djinn::real potential;
+djinn::real sigma = 0.34;   // Lennard-Jones parameter
+djinn::real epsilon = 0.38; // Lennard-Jones parameter
+djinn::LennardJones lj = djinn::LennardJones(sigma, epsilon);
 
 // Some helpful functions for calculating random numbers on an interval
 djinn::real randomReal() {
@@ -35,7 +40,7 @@ int randomInt(int a, int b) {
     return a + (rand() % (b - a));
 }
 
-djinn::real randomReal(int a, int b) {
+djinn::real randomReal(djinn::real a, djinn::real b) {
     if (a > b)
         return randomReal(b, a);
     if (a == b)
@@ -43,72 +48,65 @@ djinn::real randomReal(int a, int b) {
 
     return (djinn::real)randomInt(a, b) + randomReal();
 }
-
-// Test boundary conditions
 void checkBoundaries(djinn::Particle *particles, djinn::Vec3 bounds, int num_particles) {
-    djinn::real upper_bound[3] = {bounds.x, bounds.y, bounds.z};
-
     for (int j = 0; j < num_particles; j++) {
-        // Make some arrays to make checking each dimension easier (can do in one for loop)
-        djinn::real pos[3] = {particles[j].getPosition().x,
-                              particles[j].getPosition().y,
-                              particles[j].getPosition().z};
+        djinn::Vec3 pos = particles[j].getPosition();
+        djinn::Vec3 vel = particles[j].getVelocity();
 
-        djinn::real vel[3] = {particles[j].getVelocity().x,
-                              particles[j].getVelocity().y,
-                              particles[j].getVelocity().z};
+        if (pos.x >= bounds.x || pos.x <= 0) vel.x *= -1;
+        if (pos.y >= bounds.y || pos.y <= 0) vel.y *= -1;
+        if (pos.z >= bounds.z || pos.z <= 0) vel.z *= -1;
 
-        // for (int i = 0; i < sizeof(pos) / sizeof(pos[0]); i++) {
-        //     if (pos[i] >= upper_bound[i] || pos[i] <= 0) {
-        //         vel[i] *= -1;
-        //         particles[j].setVelocity(vel[0], vel[1], vel[2]);
-        //     }
-        // }
-
-        if (pos[0] >= upper_bound[0] || pos[0] <= 0) {
-            vel[0] *= -1;
-        }
-
-        if (pos[1] >= upper_bound[1] || pos[1] <= 0) {
-            vel[1] *= -1;
-        }
-
-        if (pos[2] >= upper_bound[2] || pos[2] <= 0) {
-            vel[2] *= -1;
-        }
-
-        particles[j].setVelocity(vel[0], vel[1], vel[2]);
+        particles[j].setVelocity(vel.x, vel.y, vel.z);
     }
 }
 
-// Calculates the distances of each pair of particles
-void calculateDistances(djinn::Particle particles[], distances &all_r, int num_particles) {
-    // distances r;
+// Calculates Lennard-Jones force of each pair of particles
+void calculateLJ(djinn::Particle particles[], int num_particles) {
     djinn::Vec3 p_i, p_j, r_vec;
-    djinn::real r_mag, x, y, z;
+    djinn::real r_sq, r_mag;
+    
+    // Calculate this once outside the loop
+    djinn::real cutoff_sq = 100; 
 
-    // Calculate distance between every pair of particles
     for (int i = 0; i < num_particles; i++) {
         p_i = particles[i].getPosition();
 
-        // j < i is an optimization to fill only the bottom triangle of the 2x2 matrix
-        //  (since r_ij = -r_ji)
         for (int j = 0; j < i; j++) {
             p_j = particles[j].getPosition();
             r_vec = p_i - p_j;
-            r_mag = r_vec.magnitude();
-            distance data = {r_vec, r_mag};
+            
+            // Calculate squared distance manually to avoid library overhead
+            r_sq = (r_vec.x * r_vec.x) + (r_vec.y * r_vec.y) + (r_vec.z * r_vec.z);
+            // Prevent division by zero and physics explosions
+            djinn::real safe_r_sq = r_sq;
+            if (safe_r_sq < 0.01) {
+                safe_r_sq = 0.01; 
+            }
 
-            all_r[i][j] = data;
+            r_mag = sqrt(safe_r_sq);
+
+            if (r_sq < cutoff_sq) {
+                // Only calculate the expensive square root if interaction is guaranteed
+                r_mag = sqrt(r_sq); 
+                
+                // Apply force to particle i
+                lj.updateForce(&particles[i], r_vec, r_mag, dr);
+                
+                // Apply equal and opposite force to particle j
+                lj.updateForce(&particles[j], r_vec * -1.0, r_mag, dr);
+            }
         }
     }
 }
+
 
 int main() {
     // Set up logging
     try {
         auto logger = spdlog::basic_logger_mt("thermo", "logs/thermo.log", true);
         spdlog::set_default_logger(logger);
+        spdlog::flush_on(spdlog::level::info);
     } catch (const spdlog::spdlog_ex &ex) {
         std::cout << "Log init failed: " << ex.what() << std::endl;
         return 0;
@@ -120,6 +118,8 @@ int main() {
     const int screenHeight = 900;
 
     InitWindow(screenWidth, screenHeight, "Djinn - Thermodynamics Demo");
+    ClearWindowState(FLAG_VSYNC_HINT);
+    SetTargetFPS(0); // Uncapped
 
     rlFPCamera cam;
     cam.Setup(45, Vector3{0, 2, 0});
@@ -132,13 +132,6 @@ int main() {
 
     // Define some initial conditions
     srand(1000000);
-    djinn::real dt = 1e-3;
-    djinn::real dr = 1e-3;
-    djinn::real sigma = 0.34e-9;   // Lennard-Jones parameter
-    djinn::real epsilon = 0.38e-9; // Lennard-Jones parameter
-    djinn::real potential;
-    djinn::LennardJones lj = djinn::LennardJones(sigma, epsilon);
-    distances all_r;
 
     djinn::PotentialRegistry u_reg;
 
@@ -147,24 +140,25 @@ int main() {
     Vector3 sq_center = bounds.normalize().toVector3();
 
     // Define a big array of particles
-    int num_particles = 750;
+    int num_particles = 800;
     djinn::Particle particles[num_particles];
     // And an array for the raylib-based particle objects
     Vector3 rl_particles[num_particles];
 
     // Randomize each of their positions and add them to the potential registry
     for (int i = 0; i < num_particles; i++) {
-        all_r.push_back(std::vector<distance>());
+      particles[i].setPosition(randomReal(0, (int)bounds.x),
+                                randomReal(0, (int)bounds.y),
+                                randomReal(0, (int)bounds.z));
 
-        for (int j = 0; j < i; j++) {
-            all_r[i].push_back({djinn::Vec3{0, 0, 0}, 0.0});
-        }
+       // Give the gas initial kinetic energy in all directions
+      //particles[i].setVelocity(randomReal(-1.0e-1, 1.0e-1),
+        //                      randomReal(-1.0e-1, 1.0e-1),
+          //                    randomReal(-1.0e-1, 1.0e-1));
+      particles[i].setVelocity(0, 0, 0);
+      particles[i].setMass(0.5f);
 
-        particles[i].setPosition(randomReal(0, (int)bounds.x),
-                                 randomReal(0, (int)bounds.y),
-                                 randomReal(0, (int)bounds.z));
-
-        u_reg.add(&particles[i], &lj);
+      u_reg.add(&particles[i], &lj);
     }
 
     if (num_particles == 1) {
@@ -172,25 +166,39 @@ int main() {
                                  randomReal(0, (int)bounds.y),
                                  randomReal(0, (int)bounds.z));
     }
+    Model particleModel = LoadModelFromMesh(GenMeshSphere(0.005f, 8, 8));
+    particleModel.materials[0].maps[MATERIAL_MAP_ALBEDO].color = RED;
+
+    // Allocate matrix array for instanced rendering
+    Matrix* transforms = (Matrix*)RL_MALLOC(num_particles * sizeof(Matrix));
+    const int trail_length = 200;
+std::deque<Vector3> particle_trails[num_particles];
 
     while (!WindowShouldClose()) {
+        // Calculate Lennard-Jones force of each pair of particles
+        calculateLJ(particles, num_particles);
+// --- DIAGNOSTIC TEST ---
+for (int i = 0; i < num_particles; i++) {
+    particles[i].addForce(djinn::Vec3(0.0f, -9.8f, 0.0f));
+}
+// -----------------------
+
         // Calculate new velocity according to Verlet Algorithm
         u_reg.integrateAll(dt);
 
         // Check boundaries and correct particles outside of them
         checkBoundaries(&particles[0], bounds, num_particles);
 
-        // Calculate the distances of each pair of particles
-        calculateDistances(particles, all_r, num_particles);
 
-        // Update the force of each particle according to the Lennard-Jones
-        // potential
+        // Update transform matrices
         for (int i = 0; i < num_particles; i++) {
-            for (int j = 0; j < all_r[i].size(); j++) {
-                lj.updateForce(&particles[i], all_r[i][j].second, dr);
-            }
-
-            rl_particles[i] = particles[i].getPosition().toVector3();
+            djinn::Vec3 p = particles[i].getPosition();
+            transforms[i] = MatrixTranslate(p.x, p.y, p.z);
+            particle_trails[i].push_back(p.toVector3());
+    
+    if (particle_trails[i].size() > trail_length) {
+        particle_trails[i].pop_front();
+    }
         }
 
         cam.Update();
@@ -200,10 +208,20 @@ int main() {
         cam.BeginMode3D();
         DrawGrid(100, 0.1f);
 
-        DrawCubeWires(sq_center, 0.9, 0.9, 0.9, WHITE);
+        DrawCubeWires(sq_center, 1.1, 1.1, 1.1, WHITE);
 
         for (int i = 0; i < num_particles; i++) {
-            DrawSphere(rl_particles[i], 0.005, RED);
+            djinn::Vec3 p = particles[i].getPosition();
+            DrawModel(particleModel, p.toVector3(), 1.0f, WHITE);
+            // Draw the trailing lines
+            for (size_t k = 1; k < particle_trails[i].size(); k++) {
+                // Calculate an opacity scalar from 0.0 to 1.0 based on age
+                float alpha = (float)k / (float)particle_trails[i].size();
+                
+                DrawLine3D(particle_trails[i][k - 1], 
+                          particle_trails[i][k], 
+                          Fade(RED, alpha));
+            }
         }
 
         cam.EndMode3D();
@@ -211,6 +229,9 @@ int main() {
         DrawFPS(10, 10);
         EndDrawing();
     }
+
+    RL_FREE(transforms);
+    UnloadModel(particleModel);
 
     return 0;
 }
