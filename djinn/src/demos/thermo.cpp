@@ -20,7 +20,7 @@
 
 #define CAMERA_IMPLEMENTATION
 
-djinn::real dt = 6e-4;
+djinn::real dt = 3e-4;
 djinn::real dr = 1e-3;
 djinn::real potential;
 djinn::real sigma = 0.34;   // Lennard-Jones parameter
@@ -59,6 +59,34 @@ void checkBoundaries(djinn::Particle *particles, djinn::Vec3 bounds, int num_par
 
         particles[j].setVelocity(vel.x, vel.y, vel.z);
     }
+}
+
+void DrawHUDCompass(const rlFPCamera& cam, Vector2 screenPos, float scale) {
+    // 1. Get a ray pointing through the desired HUD pixel on the screen
+    Ray ray = cam.GetMouseRay(screenPos);
+    
+    // 2. Project the origin 2.0 units down that ray to prevent near-plane clipping
+    Vector3 origin = Vector3Add(ray.position, Vector3Scale(ray.direction, 2.0f));
+
+    // 3. Flush the render batch and disable depth testing to render over all 3D objects
+    rlDrawRenderBatchActive();
+    rlDisableDepthTest();
+
+    // X-axis
+    DrawLine3D(origin, Vector3{origin.x + scale, origin.y, origin.z}, RED);
+    DrawSphere(Vector3{origin.x + scale, origin.y, origin.z}, scale * 0.1f, RED);
+    
+    // Y-axis
+    DrawLine3D(origin, Vector3{origin.x, origin.y + scale, origin.z}, GREEN);
+    DrawSphere(Vector3{origin.x, origin.y + scale, origin.z}, scale * 0.1f, GREEN);
+    
+    // Z-axis
+    DrawLine3D(origin, Vector3{origin.x, origin.y, origin.z + scale}, BLUE);
+    DrawSphere(Vector3{origin.x, origin.y, origin.z + scale}, scale * 0.1f, BLUE);
+
+    // 4. Restore depth testing for the next frame
+    rlDrawRenderBatchActive();
+    rlEnableDepthTest();
 }
 
 // Calculates Lennard-Jones force of each pair of particles
@@ -140,7 +168,7 @@ int main() {
     Vector3 sq_center = bounds.normalize().toVector3();
 
     // Define a big array of particles
-    int num_particles = 800;
+    int num_particles = 1000;
     djinn::Particle particles[num_particles];
     // And an array for the raylib-based particle objects
     Vector3 rl_particles[num_particles];
@@ -155,10 +183,22 @@ int main() {
       //particles[i].setVelocity(randomReal(-1.0e-1, 1.0e-1),
         //                      randomReal(-1.0e-1, 1.0e-1),
           //                    randomReal(-1.0e-1, 1.0e-1));
-      particles[i].setVelocity(0, 0, 0);
+      particles[i].setVelocity(randomReal(-1, 1), randomReal(-1, 1), randomReal(-1, 1));
       particles[i].setMass(0.5f);
 
       u_reg.add(&particles[i], &lj);
+    }
+
+    for (int i = 0; i < num_particles; i++){
+      djinn::Vec3 p1 = particles[i].getPosition();
+
+      for (int j = 0; j < i; j++) {
+        djinn::Vec3 p2 = particles[j].getPosition();
+        djinn::Vec3 disp = p1 - p2;
+        if (disp.magnitude() < 0.05) {
+          particles[j].setPosition(p2.x + .1, p2.y + .1, p2.z + .1);
+        }
+      }
     }
 
     if (num_particles == 1) {
@@ -172,16 +212,11 @@ int main() {
     // Allocate matrix array for instanced rendering
     Matrix* transforms = (Matrix*)RL_MALLOC(num_particles * sizeof(Matrix));
     const int trail_length = 200;
-std::deque<Vector3> particle_trails[num_particles];
+    std::deque<Vector3> particle_trails[num_particles];
 
     while (!WindowShouldClose()) {
         // Calculate Lennard-Jones force of each pair of particles
         calculateLJ(particles, num_particles);
-// --- DIAGNOSTIC TEST ---
-for (int i = 0; i < num_particles; i++) {
-    particles[i].addForce(djinn::Vec3(0.0f, -9.8f, 0.0f));
-}
-// -----------------------
 
         // Calculate new velocity according to Verlet Algorithm
         u_reg.integrateAll(dt);
@@ -192,13 +227,13 @@ for (int i = 0; i < num_particles; i++) {
 
         // Update transform matrices
         for (int i = 0; i < num_particles; i++) {
-            djinn::Vec3 p = particles[i].getPosition();
-            transforms[i] = MatrixTranslate(p.x, p.y, p.z);
-            particle_trails[i].push_back(p.toVector3());
+          djinn::Vec3 p = particles[i].getPosition();
+          transforms[i] = MatrixTranslate(p.x, p.y, p.z);
+          particle_trails[i].push_back(p.toVector3());
     
-    if (particle_trails[i].size() > trail_length) {
-        particle_trails[i].pop_front();
-    }
+          if (particle_trails[i].size() > trail_length) {
+              particle_trails[i].pop_front();
+          }
         }
 
         cam.Update();
@@ -218,11 +253,13 @@ for (int i = 0; i < num_particles; i++) {
                 // Calculate an opacity scalar from 0.0 to 1.0 based on age
                 float alpha = (float)k / (float)particle_trails[i].size();
                 
-                DrawLine3D(particle_trails[i][k - 1], 
-                          particle_trails[i][k], 
-                          Fade(RED, alpha));
+                DrawLine3D(particle_trails[i][k - 1], particle_trails[i][k], Fade(RED, alpha));
             }
         }
+
+        // Draw the HUD Compass last
+        Vector2 compassScreenLocation = { 100.0f, screenHeight - 100.0f };
+        DrawHUDCompass(cam, compassScreenLocation, 0.15f);
 
         cam.EndMode3D();
 

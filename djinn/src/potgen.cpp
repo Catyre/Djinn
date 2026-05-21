@@ -58,6 +58,8 @@ void djinn::LennardJones::updatePotential(djinn::Particle *particle, djinn::real
 
 // F = -grad(U)
 void djinn::LennardJones::updateForce(djinn::Particle *particle, djinn::Vec3 r_vec, djinn::real r_mag, djinn::real dvar) {
+    djinn::real sigma = 0.34e-2;   // Lennard-Jones parameter
+    djinn::real epsilon = 0.38e-2; // Lennard-Jones parameter
     djinn::real r2 = r_mag * r_mag;
     djinn::Vec3 r_hat = r_vec / r_mag;
 
