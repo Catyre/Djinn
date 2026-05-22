@@ -68,7 +68,7 @@ namespace djinn {
             real eps; // Lennard-Jones parameter
 
         public:
-            LennardJones(real sigma, real epsilon) : sigma(sig), epsilon(eps) {};
+            LennardJones(real sigma, real epsilon) : sig(sigma), eps(epsilon) {};
 
             virtual void updatePotential(Particle *particle, real var);
             virtual void updateForce(Particle *particle, Vec3 r_vec, real r_mag, real dvar);

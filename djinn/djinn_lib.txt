@@ -5,6 +5,7 @@ src/pfgen.cpp
 src/plinks.cpp
 src/potgen.cpp
 src/pworld.cpp
+src/tooling.cpp
 src/rlFPCamera.cpp
 src/rlHelper.cpp
 include/rlFPCamera.h
@@ -18,3 +19,4 @@ include/djinn/plinks.h
 include/djinn/potgen.h
 include/djinn/precision.h
 include/djinn/pworld.h
+include/djinn/tooling.h

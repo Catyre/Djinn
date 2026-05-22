@@ -62,7 +62,9 @@ string(APPEND HEADERS "${DJINN_INC}/rlFPCamera.h;"
                       "${DJINN_INC}/djinn/plinks.h;"
                       "${DJINN_INC}/djinn/potgen.h;"
                       "${DJINN_INC}/djinn/precision.h;"
-                      "${DJINN_INC}/djinn/pworld.h;")
+                      "${DJINN_INC}/djinn/pworld.h;"
+                      "${DJINN_INC}/djinn/tooling.h;")
+
 
 # Adding our source files
 string(APPEND PROJECT_SOURCES "${DJINN_SRC}/numerical.cpp;"
@@ -72,6 +74,7 @@ string(APPEND PROJECT_SOURCES "${DJINN_SRC}/numerical.cpp;"
                               "${DJINN_SRC}/plinks.cpp;"
                               "${DJINN_SRC}/potgen.cpp;"
                               "${DJINN_SRC}/pworld.cpp;"
+                              "${DJINN_SRC}/tooling.cpp;"
                               "${DJINN_SRC}/rlFPCamera.cpp;"
                               "${DJINN_SRC}/rlHelper.cpp;") # Define PROJECT_SOURCES as a list of all source files
 

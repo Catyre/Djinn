@@ -201,6 +201,14 @@ namespace djinn {
                             x * v.y - y * v.x);
             }
 
+            bool operator<(const Vec3 &v) const {
+              return (x < v.x) && (y < v.y) && (z < v.z);
+            }
+
+            bool operator>(const Vec3 &v) const {
+              return (x > v.x) && (y > v.y) && (z > v.z);
+            }
+
             void operator=(const Vec3 &v) {
                 x = v.x;
                 y = v.y;
